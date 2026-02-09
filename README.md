@@ -1,16 +1,94 @@
-# chronoflow
+# Firebase Setup Guide
 
-A new Flutter project.
+This guide will help you configure Firebase for this Flutter project.
 
-## Getting Started
+## Prerequisites
 
-This project is a starting point for a Flutter application.
+- Node.js and npm installed
+- Flutter SDK installed
+- Access to the Firebase project
 
-A few resources to get you started if this is your first Flutter project:
+## Setup Steps
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 1. Install Firebase Tools
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+npm install -g firebase-tools
+```
+
+### 2. Login to Firebase
+
+```bash
+firebase login
+```
+
+This will open a browser window for you to authenticate with your Google account.
+
+### 3. Activate FlutterFire CLI
+
+```bash
+dart pub global activate flutterfire_cli
+```
+
+### 4. Configure FlutterFire
+
+```bash
+flutterfire configure
+```
+
+This command will:
+- Connect to your Firebase project
+- Generate `lib/firebase_options.dart` with your configuration
+- Set up Firebase for all platforms (iOS, Android, Web)
+
+### 5. Download Platform-Specific Configuration Files
+
+Go to the [Firebase Console](https://console.firebase.google.com/) and download the following files:
+
+#### For iOS:
+1. Navigate to Project Settings → Your iOS app
+2. Download `GoogleService-Info.plist`
+3. Place it in: `ios/Runner/GoogleService-Info.plist`
+
+#### For Android:
+1. Navigate to Project Settings → Your Android app
+2. Download `google-services.json`
+3. Place it in: `android/app/google-services.json`
+
+## Verification
+
+After completing the setup, verify that the following files exist:
+
+```
+✅ lib/firebase_options.dart
+✅ ios/Runner/GoogleService-Info.plist
+✅ android/app/google-services.json
+```
+
+## Running the App
+
+Once Firebase is configured, you can run the app:
+
+```bash
+flutter pub get
+flutter run
+```
+
+## Troubleshooting
+
+**Issue: `flutterfire` command not found**
+- Solution: Make sure Dart's global packages are in your PATH
+  ```bash
+  export PATH="$PATH":"$HOME/.pub-cache/bin"
+  ```
+
+**Issue: Firebase configuration not found**
+- Solution: Re-run `flutterfire configure` and ensure you select the correct Firebase project
+
+**Issue: Build errors related to Firebase**
+- Solution: Run `flutter clean` and `flutter pub get`, then rebuild
+
+## Notes
+
+- (`firebase_options.dart`, `GoogleService-Info.plist`, `google-services.json`) are not committed to version control for security reasons
+- Each developer needs to run this setup process on their local machine
