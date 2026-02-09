@@ -31,7 +31,6 @@ dart pub global activate flutterfire_cli
 ```
 
 ### 4. Configure FlutterFire
-
 ```bash
 flutterfire configure
 ```
@@ -39,21 +38,17 @@ flutterfire configure
 This command will:
 - Connect to your Firebase project
 - Generate `lib/firebase_options.dart` with your configuration
-- Set up Firebase for all platforms (iOS, Android, Web)
+- Set up Firebase for all platforms (iOS, Android)
 
-### 5. Download Platform-Specific Configuration Files
+## 5. Running the App
 
-Go to the [Firebase Console](https://console.firebase.google.com/) and download the following files:
+Once Firebase is configured, you can run the app:
 
-#### For iOS:
-1. Navigate to Project Settings → Your iOS app
-2. Download `GoogleService-Info.plist`
-3. Place it in: `ios/Runner/GoogleService-Info.plist`
-
-#### For Android:
-1. Navigate to Project Settings → Your Android app
-2. Download `google-services.json`
-3. Place it in: `android/app/google-services.json`
+```bash
+flutter pub get
+flutter run
+```
+Platform specific configuration files will be automatically generated.
 
 ## Verification
 
@@ -65,14 +60,7 @@ After completing the setup, verify that the following files exist:
 ✅ android/app/google-services.json
 ```
 
-## Running the App
 
-Once Firebase is configured, you can run the app:
-
-```bash
-flutter pub get
-flutter run
-```
 
 ## Troubleshooting
 
@@ -85,8 +73,6 @@ flutter run
 **Issue: Firebase configuration not found**
 - Solution: Re-run `flutterfire configure` and ensure you select the correct Firebase project
 
-**Issue: Build errors related to Firebase**
-- Solution: Run `flutter clean` and `flutter pub get`, then rebuild
 
 ## Notes
 
