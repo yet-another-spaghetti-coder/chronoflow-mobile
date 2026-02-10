@@ -1,4 +1,4 @@
-package com.example.chronoflow
+package edu.nus.u.chronoflow
 
 import io.flutter.embedding.android.FlutterActivity
 
