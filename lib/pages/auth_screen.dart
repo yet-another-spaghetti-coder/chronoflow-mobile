@@ -25,6 +25,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     ref.read(authProvider.notifier).signIn();
   }
 
+  void onSignUpPressed() {
+    Navigator.pushReplacementNamed(context, Constants.registrationScreen);
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
@@ -61,6 +65,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ElevatedButton.icon(
             onPressed: onSignInPressed,
             label: Text(Constants.googleSignInButtonText),
+            icon: const Icon(FontAwesomeIcons.google),
+            style: ButtonStyle(
+              fixedSize: WidgetStateProperty.all(const Size(350, 60)),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: onSignUpPressed,
+            label: Text(Constants.googleSignUpButtonText),
             icon: const Icon(FontAwesomeIcons.google),
             style: ButtonStyle(
               fixedSize: WidgetStateProperty.all(const Size(350, 60)),

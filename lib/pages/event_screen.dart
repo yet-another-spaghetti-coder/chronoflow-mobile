@@ -1,5 +1,4 @@
 import 'package:chronoflow/providers/storage_provider.dart';
-import 'package:chronoflow/services/storage_service.dart';
 import 'package:chronoflow/widgets/web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,28 +14,30 @@ class EventScreen extends ConsumerStatefulWidget {
 }
 
 class EventScreenState extends ConsumerState<EventScreen> {
-
   Future<void> handleSignOut(BuildContext context) {
     ref.read(authProvider.notifier).signOut();
     Navigator.pushReplacementNamed(context, Constants.authScreen);
     return Future.value();
   }
 
-  Future<String> fetchCookie() async {
-      SecureStorageService storageService = ref.watch(secureStorageServiceProvider);
-      String cookie = await storageService.getToken() ?? "";
-      return cookie;
-    }
+  Future<String?> fetchCookie() {
+    return ref.read(secureStorageServiceProvider).getToken();
+  }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 600) {
-          return LandscapeScaffold(handleSignOut: handleSignOut, fetchCookie: fetchCookie);
-        }
-        else{
-          return PortraitScaffold(handleSignOut: handleSignOut, fetchCookie: fetchCookie);
+          return LandscapeScaffold(
+            handleSignOut: handleSignOut,
+            fetchCookie: fetchCookie,
+          );
+        } else {
+          return PortraitScaffold(
+            handleSignOut: handleSignOut,
+            fetchCookie: fetchCookie,
+          );
         }
       },
     );
@@ -45,7 +46,7 @@ class EventScreenState extends ConsumerState<EventScreen> {
 
 class LandscapeScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
-  final Future<String> Function() fetchCookie;
+  final Future<String?> Function() fetchCookie;
   const LandscapeScaffold({
     super.key,
     required this.handleSignOut,
@@ -53,34 +54,33 @@ class LandscapeScaffold extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: fetchCookie(),
-      builder: (context, snapshot) {
-        String cookie = snapshot.data ?? "";
-        return Scaffold(
-          body: Stack(
+    return Scaffold(
+      body: Stack(
+        children: [
+          const BackgroundImage(),
+          Row(
             children: [
-              const BackgroundImage(),
-              Row(
-                children: [
-                  VisionDrawer(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    signOut: () => handleSignOut(context),
-                  ),
-                  Expanded(child: WebViewWithLoading(url: Constants.chronoflowWebsite, cookie: cookie)),
-                ],
+              VisionDrawer(
+                color: Colors.white.withValues(alpha: 0.9),
+                signOut: () => handleSignOut(context),
+              ),
+              Expanded(
+                child: WebViewWithLoading(
+                  url: Constants.chronoflowFrontend,
+                  fetchCookie: fetchCookie,
+                ),
               ),
             ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
 
 class PortraitScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
-  final Future<String> Function() fetchCookie;
+  final Future<String?> Function() fetchCookie;
   const PortraitScaffold({
     super.key,
     required this.handleSignOut,
@@ -88,26 +88,23 @@ class PortraitScaffold extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: fetchCookie(),
-      builder: (context, snapshot) {
-        String cookie = snapshot.data ?? "";
-        return Scaffold(
-          appBar: AppBar(title: const Text(Constants.appTitle)),
-          drawer: VisionDrawer(
-            color: Colors.white.withValues(alpha: 0.9),
-            signOut: () {
-              handleSignOut(context);
-            },
+    return Scaffold(
+      appBar: AppBar(title: const Text(Constants.appTitle)),
+      drawer: VisionDrawer(
+        color: Colors.white.withValues(alpha: 0.9),
+        signOut: () {
+          handleSignOut(context);
+        },
+      ),
+      body: Stack(
+        children: [
+          const BackgroundImage(),
+          WebViewWithLoading(
+            url: Constants.chronoflowFrontend,
+            fetchCookie: fetchCookie,
           ),
-          body: Stack(
-            children: [
-              const BackgroundImage(),
-              WebViewWithLoading(url: Constants.chronoflowWebsite, cookie: cookie),
-            ],
-          ),
-        );
-      }
-      );
+        ],
+      ),
+    );
   }
 }
