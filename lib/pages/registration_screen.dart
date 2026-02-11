@@ -75,26 +75,30 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   }
 
   Widget _buildRegistrationCenter() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              Constants.registrationFormTitle,
-              style: const TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 5, 43, 74),
+    return Container(
+      padding: EdgeInsets.all(60),
+      color: Colors.white.withAlpha(150),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                Constants.registrationFormTitle,
+                style: const TextStyle(
+                  fontSize: 45,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 5, 43, 74),
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            RegistrationForm(
-              submitRegistrationForm: _submitRegistrationForm,
-            ),
-          ],
+              const SizedBox(height: 20),
+              RegistrationForm(
+                submitRegistrationForm: _submitRegistrationForm,
+              ),
+            ],
+          ),
         ),
       ),
     );

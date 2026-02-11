@@ -14,9 +14,11 @@ class EventScreen extends ConsumerStatefulWidget {
 }
 
 class EventScreenState extends ConsumerState<EventScreen> {
-  Future<void> handleSignOut(BuildContext context) async{
+  Future<void> handleSignOut(BuildContext context) async {
     await ref.read(authProvider.notifier).signOut();
-    Navigator.pushReplacementNamed(context, Constants.authScreen);
+    if (context.mounted) {
+      Navigator.pushReplacementNamed(context, Constants.authScreen);
+    }
     return Future.value();
   }
 

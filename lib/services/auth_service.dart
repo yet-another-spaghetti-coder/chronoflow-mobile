@@ -78,7 +78,7 @@ class AuthService {
         "jwtToken": userCredential.credential!.accessToken!,
         ...formPayload
       });
-      await this.signOut();
+      await signOut();
     }
   }
 
