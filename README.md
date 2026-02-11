@@ -198,7 +198,7 @@ Want to add a new feature or fix a bug? Check out our [CONTRIBUTING.md](CONTRIBU
 
 [![Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
-This project is released into the public domain. See [LICENSE](LICENSE) for details.
+This project is released into the public domain. See [LICENSE](LICENSE.md) for details.
 
 ---
 

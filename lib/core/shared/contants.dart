@@ -1,6 +1,6 @@
 class Constants {
-  const Constant({
-    this.apiBaseUrl = 'http://localhost:8080/',
+  const Constants({
+    this.apiBaseUrl = 'http://localhost:8080',
     this.dashboardBaseUrl = 'http://localhost:5173/',
   });
 

@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
         materialDarkTheme: AppThemes.materialDarkTheme,
         cupertinoLightTheme: AppThemes.cupertinoLightTheme,
         cupertinoDarkTheme: AppThemes.cupertinoDarkTheme,
-        routerConfig: AppRouter().generateRoute(),
+        routerConfig: AppRouter.router,
       ),
     );
   }

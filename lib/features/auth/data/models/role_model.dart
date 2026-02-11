@@ -16,7 +16,7 @@ class RoleModel extends Role {
       name: json['name'] as String,
       key: json['key'] as String,
       isDefault: json['isDefault'] as bool,
-      permissions: (json['permissions'] as List)
+      permissions: (json['permissions'] as List<dynamic>)
           .map((p) => PermissionModel.fromJson(p as Map<String, dynamic>))
           .toList(),
     );

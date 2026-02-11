@@ -3,7 +3,7 @@ import 'package:chronoflow/features/counter/counter_page.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
-  GoRouter generateRoute() => GoRouter(
+  static final GoRouter router = GoRouter(
     initialLocation: '/login',
     routes: [
       GoRoute(
