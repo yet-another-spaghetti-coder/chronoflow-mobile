@@ -34,12 +34,12 @@ class AppThemes {
       ),
       iconTheme: const IconThemeData(color: Colors.white),
     ),
-    cardTheme: CardTheme(
+    cardTheme: ThemeData().cardTheme.copyWith(
       color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: darkGreenPrimary.withValues(alpha: 0.1)),
+        side: BorderSide(color: darkGreenPrimary.withOpacity(0.1)),
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
