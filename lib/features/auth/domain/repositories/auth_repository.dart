@@ -9,5 +9,5 @@ abstract class AuthRepository {
     required bool remember,
   });
 
-  Future<Either<Failure, void>> logout();
+  Future<Either<Failure, Unit>> logout();
 }
