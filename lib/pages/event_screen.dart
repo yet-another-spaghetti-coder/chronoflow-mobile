@@ -14,8 +14,8 @@ class EventScreen extends ConsumerStatefulWidget {
 }
 
 class EventScreenState extends ConsumerState<EventScreen> {
-  Future<void> handleSignOut(BuildContext context) {
-    ref.read(authProvider.notifier).signOut();
+  Future<void> handleSignOut(BuildContext context) async{
+    await ref.read(authProvider.notifier).signOut();
     Navigator.pushReplacementNamed(context, Constants.authScreen);
     return Future.value();
   }
@@ -60,7 +60,7 @@ class LandscapeScaffold extends StatelessWidget {
           const BackgroundImage(),
           Row(
             children: [
-              VisionDrawer(
+              MainDrawer(
                 color: Colors.white.withValues(alpha: 0.9),
                 signOut: () => handleSignOut(context),
               ),
@@ -90,7 +90,7 @@ class PortraitScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text(Constants.appTitle)),
-      drawer: VisionDrawer(
+      drawer: MainDrawer(
         color: Colors.white.withValues(alpha: 0.9),
         signOut: () {
           handleSignOut(context);

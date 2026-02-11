@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:chronoflow/core/constants.dart';
 
-class VisionDrawer extends StatelessWidget{
+class MainDrawer extends StatelessWidget{
   final Color color;
   final VoidCallback signOut;
-  const VisionDrawer({
+  const MainDrawer({
     super.key,
     required this.color,
     required this.signOut });

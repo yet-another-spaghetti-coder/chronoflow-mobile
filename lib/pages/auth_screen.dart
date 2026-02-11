@@ -67,15 +67,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             label: Text(Constants.googleSignInButtonText),
             icon: const Icon(FontAwesomeIcons.google),
             style: ButtonStyle(
-              fixedSize: WidgetStateProperty.all(const Size(350, 60)),
+              fixedSize: WidgetStateProperty.all(const Size(330, 50)),
             ),
           ),
+          const SizedBox(height: 10),
           ElevatedButton.icon(
             onPressed: onSignUpPressed,
             label: Text(Constants.googleSignUpButtonText),
             icon: const Icon(FontAwesomeIcons.google),
             style: ButtonStyle(
-              fixedSize: WidgetStateProperty.all(const Size(350, 60)),
+              fixedSize: WidgetStateProperty.all(const Size(330, 50)),
             ),
           ),
         ],
