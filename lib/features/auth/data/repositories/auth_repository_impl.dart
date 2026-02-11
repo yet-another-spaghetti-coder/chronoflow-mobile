@@ -42,15 +42,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> logout() async {
-    try {
+    return _handleExceptions<Unit>(() async {
       await remoteDataSource.logout();
-      return const Right(unit);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
-    } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message));
-    } on Object catch (_) {
-      return Left(ServerFailure(message: 'Unexpected error occurred'));
-    }
+      return unit;
+    });
   }
 }

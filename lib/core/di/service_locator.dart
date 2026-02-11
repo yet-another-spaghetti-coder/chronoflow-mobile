@@ -14,7 +14,7 @@ final serviceLocator = GetIt.instance;
 Future<void> setupServiceLocator() async {
   serviceLocator
     // Core
-    ..registerFactory<Constant>(Constant.new)
+    ..registerFactory<Constants>(Constants.new)
     ..registerFactory<Dio>(
       () => NetworkClient(Dio(), constant: serviceLocator()).dio,
     )

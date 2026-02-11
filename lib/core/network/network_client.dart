@@ -7,7 +7,7 @@ class NetworkClient {
   }
 
   final Dio _dio;
-  final Constant constant;
+  final Constants constant;
 
   Dio get dio => _dio;
 }

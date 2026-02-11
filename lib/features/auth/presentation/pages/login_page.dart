@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return AdaptiveButton(
-                          onPressed: state is AuthLoading ? null : () => context.push('/forgot-password'),
+                          onPressed: null, // Disabled until /forgot-password route is implemented
                           label: 'Forgot Password?',
                         );
                       },

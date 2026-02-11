@@ -36,7 +36,7 @@ class LoginDataModel {
   factory LoginDataModel.fromJson(Map<String, dynamic> json) {
     return LoginDataModel(
       user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
-      roles: (json['roles'] as List).map((r) => RoleModel.fromJson(r as Map<String, dynamic>)).toList(),
+      roles: (json['roles'] as List<dynamic>).map((r) => RoleModel.fromJson(r as Map<String, dynamic>)).toList(),
     );
   }
 
