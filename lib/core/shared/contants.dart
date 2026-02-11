@@ -1,4 +1,4 @@
-class Constant {
+class Constants {
   const Constant({
     this.apiBaseUrl = 'http://localhost:8080/',
     this.dashboardBaseUrl = 'http://localhost:5173/',
