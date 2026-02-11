@@ -78,13 +78,14 @@ class AuthService {
         "jwtToken": userCredential.credential!.accessToken!,
         ...formPayload
       });
-      await _storageService.saveToken(userCredential.credential!.accessToken!);
+      await this.signOut();
     }
   }
 
   Future<AuthState> signOut() async {
     try {
       await _auth.signOut();
+      await _storageService.deleteToken();
       return AuthState(isLoggedIn: false);
     } catch (e) {
       debugPrint('Error during sign out: $e');
