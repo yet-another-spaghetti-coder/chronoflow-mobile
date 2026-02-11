@@ -204,8 +204,8 @@ class NotFoundFailure extends Failure {
   }) : super(
          code: 'NOT_FOUND',
          metadata: {
-           'resource': ?resource,
-           'id': ?id,
+           'resource': resource,
+           'id': id,
          },
        );
 
@@ -301,8 +301,8 @@ class InsufficientFundsFailure extends BusinessFailure {
   }) : super(
          code: 'INSUFFICIENT_FUNDS',
          metadata: {
-           'required': ?required,
-           'available': ?available,
+           'required': required,
+           'available': available,
          },
        );
 
@@ -341,8 +341,8 @@ class QuotaExceededFailure extends BusinessFailure {
   }) : super(
          code: 'QUOTA_EXCEEDED',
          metadata: {
-           'limit': ?limit,
-           'current': ?current,
+           'limit': limit,
+           'current': current,
          },
        );
 
@@ -378,8 +378,8 @@ class PaymentFailure extends Failure {
   }) : super(
          code: 'PAYMENT_FAILED',
          metadata: {
-           'transactionId': ?transactionId,
-           'paymentMethod': ?paymentMethod,
+           'transactionId': transactionId,
+           'paymentMethod': paymentMethod,
          },
        );
 
@@ -417,9 +417,9 @@ class RateLimitFailure extends Failure {
   }) : super(
          code: 'RATE_LIMITED',
          metadata: {
-           'retryAfter': ?retryAfter?.toIso8601String(),
-           'limit': ?limit,
-           'remaining': ?remaining,
+           'retryAfter': retryAfter?.toIso8601String(),
+           'limit': limit,
+           'remaining': remaining,
          },
        );
 
