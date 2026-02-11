@@ -1,4 +1,9 @@
 class Constant {
-  String apiBaseUrl = 'http://localhost:8080/';
-  String dashboardBaseUrl = 'http://localhost:5173/';
+  const Constant({
+    this.apiBaseUrl = 'http://localhost:8080/',
+    this.dashboardBaseUrl = 'http://localhost:5173/',
+  });
+
+  final String apiBaseUrl;
+  final String dashboardBaseUrl;
 }

@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            context.go('/home');
+            context.go('/');
           } else if (state is AuthError) {
             AdaptiveSnackBar.show(
               context,
