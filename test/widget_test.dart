@@ -11,23 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (tester) async {
+  testWidgets('App starts on login page', (tester) async {
     // Build our app and trigger a frame.
     WidgetsFlutterBinding.ensureInitialized();
     await setupServiceLocator();
     await tester.pumpWidget(const MainApp());
-
-    // MainApp initially routes to /login, so we need to navigate to the counter page
-    // Verify that we're on the login page initially
-    expect(find.text('Login'), findsWidgets);
-    
-    // Navigate to the counter page
     await tester.pumpAndSettle();
-    final router = serviceLocator<AuthBloc>().state is AuthSuccess ? '/' : '/';
-    // Since we're not authenticated, we can't easily navigate to counter in this test
-    // This test should be updated to test the login flow or counter page separately
-    
-    // For now, skip counter-specific assertions
-    // A better approach would be to test CounterPage directly or mock authentication
+
+    // Verify that the app initially routes to the login page
+    expect(find.text('Login'), findsWidgets);
   });
 }
