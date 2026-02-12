@@ -1,7 +1,10 @@
-# Firebase Setup Guide
 
-This guide will help you configure Firebase for this Flutter project.
+An Event Management platform.
 
+[![style: netglade analysis](https://img.shields.io/badge/style-netglade_analysis-26D07C.svg)](https://pub.dev/packages/netglade_analysis)
+
+
+Setup
 ## Prerequisites
 
 - Node.js and npm installed
