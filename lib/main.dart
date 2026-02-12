@@ -1,18 +1,18 @@
 import 'dart:ui';
 
-import 'package:chronoflow/pages/registration_screen.dart';
-import 'package:flutter/material.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/firebase_options.dart';
 import 'package:chronoflow/pages/auth_screen.dart';
 import 'package:chronoflow/pages/event_screen.dart';
+import 'package:chronoflow/pages/registration_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Placeholder(),
+      home: const Placeholder(),
       debugShowCheckedModeBanner: false,
       scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices:{
         PointerDeviceKind.touch,

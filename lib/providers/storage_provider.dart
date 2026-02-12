@@ -6,6 +6,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Provider
 final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
-  final storage = const FlutterSecureStorage();
+  const storage = FlutterSecureStorage();
   return SecureStorageService(storage);
 });

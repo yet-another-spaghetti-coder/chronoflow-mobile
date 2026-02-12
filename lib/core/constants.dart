@@ -11,5 +11,5 @@ class Constants {
   static String chronoflowFrontend = 'http://localhost:5173';
   static String chronoflowDomain = 'localhost';
   static String chronoflowBackend = 'http://localhost:8080';
-  static String registerOrganizerEndpoint = "/users/reg/sso-organizer";
+  static String registerOrganizerEndpoint = '/users/reg/sso-organizer';
 }

@@ -1,22 +1,21 @@
-import 'package:flutter/material.dart';
 import 'package:chronoflow/core/constants.dart';
+import 'package:flutter/material.dart';
 
 class MainDrawer extends StatelessWidget{
   final Color color;
   final VoidCallback signOut;
   const MainDrawer({
-    super.key,
-    required this.color,
-    required this.signOut });
+    required this.color, required this.signOut, super.key });
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0))),
+      shape: const RoundedRectangleBorder(),
       elevation: 2,
       backgroundColor: color,
       child: Column(
         children: [
           buildDrawerHeader(),
+          buildListTile(icon: Icons.home, text: 'HOME', onTap: ()=>Navigator.pushReplacementNamed(context, Constants.eventScreen)),
           buildListTile(icon: Icons.logout, text: 'LOGOUT', onTap: signOut)
         ],
       )
@@ -25,7 +24,7 @@ class MainDrawer extends StatelessWidget{
   }
   Widget buildDrawerHeader(){
     return DrawerHeader(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white
       ),
       child: Center(

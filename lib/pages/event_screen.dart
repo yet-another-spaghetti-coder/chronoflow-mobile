@@ -1,11 +1,11 @@
+import 'package:chronoflow/core/constants.dart';
+import 'package:chronoflow/providers/auth_provider.dart';
 import 'package:chronoflow/providers/storage_provider.dart';
+import 'package:chronoflow/widgets/background_image.dart';
+import 'package:chronoflow/widgets/sidebar.dart';
 import 'package:chronoflow/widgets/web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chronoflow/core/constants.dart';
-import 'package:chronoflow/providers/auth_provider.dart';
-import 'package:chronoflow/widgets/background_image.dart';
-import 'package:chronoflow/widgets/sidebar.dart';
 
 class EventScreen extends ConsumerStatefulWidget {
   const EventScreen({super.key});
@@ -17,7 +17,7 @@ class EventScreenState extends ConsumerState<EventScreen> {
   Future<void> handleSignOut(BuildContext context) async {
     await ref.read(authProvider.notifier).signOut();
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, Constants.authScreen);
+      await Navigator.pushReplacementNamed(context, Constants.authScreen);
     }
     return Future.value();
   }
@@ -50,9 +50,7 @@ class LandscapeScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
   final Future<String?> Function() fetchCookie;
   const LandscapeScaffold({
-    super.key,
-    required this.handleSignOut,
-    required this.fetchCookie,
+    required this.handleSignOut, required this.fetchCookie, super.key,
   });
   @override
   Widget build(BuildContext context) {
@@ -84,9 +82,7 @@ class PortraitScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
   final Future<String?> Function() fetchCookie;
   const PortraitScaffold({
-    super.key,
-    required this.handleSignOut,
-    required this.fetchCookie,
+    required this.handleSignOut, required this.fetchCookie, super.key,
   });
   @override
   Widget build(BuildContext context) {

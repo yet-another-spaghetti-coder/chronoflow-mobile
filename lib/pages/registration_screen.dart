@@ -24,7 +24,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
           const BackgroundImage(),
           _buildRegistrationCenter(),
           if (_isLoading)
-            Container(
+            ColoredBox(
               color: Colors.black.withAlpha(150),
               child: const Center(
                 child: CircularProgressIndicator(),
@@ -46,8 +46,8 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       if (!mounted) return;
       
       _showSnackBar('Registration succeeded', isError: false);
-      Navigator.pushReplacementNamed(context, Constants.authScreen);
-    } catch (exception) {
+      await Navigator.pushReplacementNamed(context, Constants.authScreen);
+    } on Exception catch (exception) {
       if (!mounted) return;
       
       _showSnackBar(
@@ -76,11 +76,11 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
 
   Widget _buildRegistrationCenter() {
     return Container(
-      padding: EdgeInsets.all(60),
+      padding: const EdgeInsets.all(60),
       color: Colors.white.withAlpha(150),
       child: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

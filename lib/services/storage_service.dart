@@ -9,8 +9,8 @@ class SecureStorageService {
     await _storage.write(key: 'jwt_token', value: token);
   }
   
-  Future<String?> getToken() async {
-    return await _storage.read(key: 'jwt_token');
+  Future<String?> getToken() {
+    return _storage.read(key: 'jwt_token');
   }
   
   Future<void> deleteToken() async {
@@ -22,6 +22,6 @@ class SecureStorageService {
   }
   
   Future<String?> getValue(String key) async {
-    return await _storage.read(key: key);
+    return _storage.read(key: key);
   }
 }

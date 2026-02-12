@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class RegistrationForm extends StatefulWidget {
   final void Function(OrganiserRegistration orgReg) submitRegistrationForm;
-  const RegistrationForm({super.key, required this.submitRegistrationForm});
+  const RegistrationForm({required this.submitRegistrationForm, super.key});
 
   @override
   State<RegistrationForm> createState() => _RegistrationFormState();
@@ -26,7 +26,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
       key: _formKey,
       child: Column(
         children: [
-          Text("Contact number"),
+          const Text('Contact number'),
           TextFormField(
             controller: _registrationController.contactNumberController,
             textAlign: TextAlign.center,
@@ -39,7 +39,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
             },
           ),
           const SizedBox(height: 16),
-          Text("Organisation name"),
+          const Text('Organisation name'),
           TextFormField(
             controller: _registrationController.organisationNameController,
             textAlign: TextAlign.center,
@@ -51,7 +51,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
             },
           ),
           const SizedBox(height: 16),
-          Text("Organisation address"),
+          const Text('Organisation address'),
           TextFormField(
             controller: _registrationController.organisationAddressController,
             textAlign: TextAlign.center,
@@ -63,7 +63,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
             },
           ),
           const SizedBox(height: 16),
-          Text("Organisation code"),
+          const Text('Organisation code'),
           TextFormField(
             controller: _registrationController.organisationCodeController,
             textAlign: TextAlign.center,

@@ -5,9 +5,7 @@ class WebViewWithLoading extends StatefulWidget {
   final String url;
   final Future<String?> Function()fetchCookie;
   const WebViewWithLoading({
-    super.key,
-    required this.url,
-    required this.fetchCookie,
+    required this.url, required this.fetchCookie, super.key,
   });
 
   @override
@@ -27,35 +25,34 @@ class _WebViewWithLoadingState extends State<WebViewWithLoading> {
 
   Future<void> _initializeWebView() async {
     // Set up the cookie first
-    String? cookie = await widget.fetchCookie();
+    final cookie = await widget.fetchCookie();
     if (cookie != null) {
-      WebViewCookie authCookie = WebViewCookie(
+      final authCookie = WebViewCookie(
         name: 'token',
         value: cookie,
-        path: '/',
-        domain: "localhost",
+        domain: 'localhost',
       );
 
-      final WebViewCookieManager cookieManager = WebViewCookieManager();
+      final cookieManager = WebViewCookieManager();
       await cookieManager.setCookie(authCookie); // Wait for cookie to be set
       // Then initialize the controller
-      controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setNavigationDelegate(
+      controller = WebViewController();
+      await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+      await controller.setNavigationDelegate(
           NavigationDelegate(
-            onProgress: (int progress) {
+            onProgress: (progress) {
               setState(() {
                 loadingProgress = progress;
               });
             },
-            onPageFinished: (String url) {
+            onPageFinished: (url) {
               setState(() {
                 loadingProgress = 100;
               });
             },
           ),
-        )
-        ..loadRequest(Uri.parse(widget.url));
+        );
+      await controller.loadRequest(Uri.parse(widget.url));
 
       setState(() {
         isInitialized = true;
