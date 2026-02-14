@@ -11,10 +11,10 @@ class OrganiserRegistration {
   });
 
   OrganiserRegistration.empty()
-      : contactNumber = '',
-        organisationName = '',
-        organisationAddress = '',
-        organisationCode = '';
+    : contactNumber = '',
+      organisationName = '',
+      organisationAddress = '',
+      organisationCode = '';
 
   Map<String, dynamic> toJson() {
     return {

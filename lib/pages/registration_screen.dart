@@ -42,14 +42,14 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
 
     try {
       await ref.read(authProvider.notifier).signUp(orgReg);
-      
+
       if (!mounted) return;
-      
+
       _showSnackBar('Registration succeeded', isError: false);
       await Navigator.pushReplacementNamed(context, Constants.authScreen);
     } on Exception catch (exception) {
       if (!mounted) return;
-      
+
       _showSnackBar(
         exception.toString().contains('Exception:')
             ? exception.toString().replaceFirst('Exception: ', '')

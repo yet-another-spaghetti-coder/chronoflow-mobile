@@ -50,7 +50,9 @@ class LandscapeScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
   final Future<String?> Function() fetchCookie;
   const LandscapeScaffold({
-    required this.handleSignOut, required this.fetchCookie, super.key,
+    required this.handleSignOut,
+    required this.fetchCookie,
+    super.key,
   });
   @override
   Widget build(BuildContext context) {
@@ -82,7 +84,9 @@ class PortraitScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
   final Future<String?> Function() fetchCookie;
   const PortraitScaffold({
-    required this.handleSignOut, required this.fetchCookie, super.key,
+    required this.handleSignOut,
+    required this.fetchCookie,
+    super.key,
   });
   @override
   Widget build(BuildContext context) {

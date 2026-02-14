@@ -7,7 +7,7 @@ class Constants {
   static const String googleSignUpButtonText = 'Sign up with Google';
   static const String placeholderImage = 'assets/images/default.jpg';
   static String sidebarTitle = 'ChronoFlow Menu';
-  static String registrationFormTitle  = 'Register as Organizer';
+  static String registrationFormTitle = 'Register as Organizer';
   static String chronoflowFrontend = 'http://localhost:5173';
   static String chronoflowDomain = 'localhost';
   static String chronoflowBackend = 'http://localhost:8080';

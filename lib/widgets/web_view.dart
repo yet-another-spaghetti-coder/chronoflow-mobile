@@ -3,9 +3,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewWithLoading extends StatefulWidget {
   final String url;
-  final Future<String?> Function()fetchCookie;
+  final Future<String?> Function() fetchCookie;
   const WebViewWithLoading({
-    required this.url, required this.fetchCookie, super.key,
+    required this.url,
+    required this.fetchCookie,
+    super.key,
   });
 
   @override
@@ -39,19 +41,19 @@ class _WebViewWithLoadingState extends State<WebViewWithLoading> {
       controller = WebViewController();
       await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
       await controller.setNavigationDelegate(
-          NavigationDelegate(
-            onProgress: (progress) {
-              setState(() {
-                loadingProgress = progress;
-              });
-            },
-            onPageFinished: (url) {
-              setState(() {
-                loadingProgress = 100;
-              });
-            },
-          ),
-        );
+        NavigationDelegate(
+          onProgress: (progress) {
+            setState(() {
+              loadingProgress = progress;
+            });
+          },
+          onPageFinished: (url) {
+            setState(() {
+              loadingProgress = 100;
+            });
+          },
+        ),
+      );
       await controller.loadRequest(Uri.parse(widget.url));
 
       setState(() {
@@ -69,8 +71,7 @@ class _WebViewWithLoadingState extends State<WebViewWithLoading> {
     return Column(
       children: [
         Expanded(child: WebViewWidget(controller: controller)),
-        if (loadingProgress < 100)
-          LinearProgressIndicator(value: loadingProgress / 100.0),
+        if (loadingProgress < 100) LinearProgressIndicator(value: loadingProgress / 100.0),
       ],
     );
   }

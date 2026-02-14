@@ -28,8 +28,7 @@ class AuthService {
         userCredentials = await _auth.signInWithPopup(googleProvider);
       } else {
         // Trigger the authentication flow
-        final googleUser = await GoogleSignIn.instance
-            .authenticate();
+        final googleUser = await GoogleSignIn.instance.authenticate();
 
         // Obtain the auth details from the request
         final googleAuth = googleUser.authentication;
@@ -58,8 +57,7 @@ class AuthService {
   }
 
   Future<void> signUp(OrganiserRegistration orgReg) async {
-    final googleUser = await GoogleSignIn.instance
-        .authenticate();
+    final googleUser = await GoogleSignIn.instance.authenticate();
 
     // Obtain the auth details from the request
     final googleAuth = googleUser.authentication;
@@ -69,14 +67,13 @@ class AuthService {
       idToken: googleAuth.idToken,
     );
     // Once signed in, return the UserCredentia
-    final userCredential = await FirebaseAuth.instance
-        .signInWithCredential(credential);
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
     if (userCredential.credential?.accessToken != null) {
       final client = HttpClient();
       final formPayload = orgReg.toJson();
       await client.post(Constants.registerOrganizerEndpoint, {
         'jwtToken': userCredential.credential!.accessToken,
-        ...formPayload
+        ...formPayload,
       });
       await signOut();
     }

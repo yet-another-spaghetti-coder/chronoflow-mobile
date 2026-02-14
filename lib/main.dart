@@ -28,17 +28,15 @@ class MyApp extends StatelessWidget {
       ),
       home: const Placeholder(),
       debugShowCheckedModeBanner: false,
-      scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices:{
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.unknown
-      }),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.unknown},
+      ),
       initialRoute: Constants.authScreen,
       routes: {
-        Constants.authScreen:(context)=>const AuthScreen(),
-        Constants.eventScreen:(context)=>const EventScreen(),
-        Constants.registrationScreen:(context)=>const RegistrationScreen(),
-      }
+        Constants.authScreen: (context) => const AuthScreen(),
+        Constants.eventScreen: (context) => const EventScreen(),
+        Constants.registrationScreen: (context) => const RegistrationScreen(),
+      },
     );
   }
 }
