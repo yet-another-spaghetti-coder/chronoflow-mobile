@@ -29,7 +29,11 @@ class MyApp extends StatelessWidget {
       home: const Placeholder(),
       debugShowCheckedModeBanner: false,
       scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse, PointerDeviceKind.unknown},
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.unknown,
+        },
       ),
       initialRoute: Constants.authScreen,
       routes: {

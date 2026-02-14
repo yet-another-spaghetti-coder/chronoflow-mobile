@@ -37,7 +37,7 @@ jobs:
           $(find lib test -name "*.dart" \
             -not -name "firebase_options.dart")
       - run: flutter analyze --fatal-infos
-      - run: flutter test --coverage -concurrency=4
+      - run: flutter test --coverage --concurrency=4
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

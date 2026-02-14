@@ -44,7 +44,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
     });
     return Scaffold(
-      body: Stack(children: [const BackgroundImage(), buildAuthCenter(context)]),
+      body: Stack(
+        children: [const BackgroundImage(), buildAuthCenter(context)],
+      ),
     );
   }
 

@@ -42,7 +42,9 @@ class AuthService {
           credential,
         );
         if (userCredentials.credential?.accessToken != null) {
-          await _storageService.saveToken(userCredentials.credential!.accessToken!);
+          await _storageService.saveToken(
+            userCredentials.credential!.accessToken!,
+          );
         }
       }
       if (userCredentials.user != null) {
@@ -67,7 +69,9 @@ class AuthService {
       idToken: googleAuth.idToken,
     );
     // Once signed in, return the UserCredentia
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(
+      credential,
+    );
     if (userCredential.credential?.accessToken != null) {
       final client = HttpClient();
       final formPayload = orgReg.toJson();

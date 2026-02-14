@@ -39,7 +39,11 @@ class MainDrawer extends StatelessWidget {
     );
   }
 
-  Widget buildListTile({required IconData icon, required String text, required VoidCallback onTap}) {
+  Widget buildListTile({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
     return ListTile(
       hoverColor: Colors.white,
       leading: Icon(icon),
