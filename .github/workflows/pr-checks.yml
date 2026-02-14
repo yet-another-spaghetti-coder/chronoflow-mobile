@@ -11,6 +11,7 @@ jobs:
   analyze-and-test:
     runs-on:
       - ubuntu-latest
+    environment: dev
     steps:
       - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
@@ -18,10 +19,25 @@ jobs:
           channel: stable
           flutter-version: 3.38.9
           cache: true
+      
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+      - name: Install FlutterFire CLI
+        run: flutter pub global activate flutterfire_cli
+      - name: Configure Firebase
+        run: |
+          flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
+            --project=${{ secrets.FIREBASE_PROJECT_ID }} \
+            --platforms=android,ios \
+            --yes
+            
       - run: flutter pub get
-      - run: dart format --set-exit-if-changed .
+      - run: |
+          dart format --set-exit-if-changed \
+          $(find lib test -name "*.dart" \
+            -not -name "firebase_options.dart")
       - run: flutter analyze --fatal-infos
-      - run: flutter test --coverage -concurrency=4
+      - run: flutter test --coverage --concurrency=4
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
