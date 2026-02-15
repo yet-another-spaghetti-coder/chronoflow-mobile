@@ -79,8 +79,8 @@ jobs:
           # Complete silence, only show if it fails
           if ! bundle exec fastlane beta > /tmp/fastlane.log 2>&1; then
             echo "❌ Fastlane failed"
-            echo "Last 20 lines:"
-            tail -20 /tmp/fastlane.log
+            echo "Last 60 lines:"
+            tail -60 /tmp/fastlane.log
           exit 1
           fi
             echo "✅ Deployment successful"
