@@ -76,7 +76,6 @@ jobs:
         working-directory: ios
         run: |
           pod install
-          bundle exec fastlane beta
           # Complete silence, only show if it fails
           if ! bundle exec fastlane beta > /tmp/fastlane.log 2>&1; then
             echo "❌ Fastlane failed"
