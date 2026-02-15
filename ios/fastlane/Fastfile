@@ -42,6 +42,22 @@ platform :ios do
       build_number: new_build_number,
       xcodeproj:  "Runner.xcodeproj"
     )
+    profile_path = ENV["sigh_edu.nus.u.chronoflow_appstore_profile-path"]
+    correct_profile_dir = File.expand_path("~/Library/MobileDevice/Provisioning Profiles")
+    
+    UI.important "Fixing profile location..."
+    sh("mkdir -p '#{correct_profile_dir}'")
+    sh("cp '#{profile_path}' '#{correct_profile_dir}/'")
+    UI.success "✅ Profile copied to: #{correct_profile_dir}"
+    
+    # Update Xcode project to use the profile
+    update_project_provisioning(
+      xcodeproj: "Runner.xcodeproj",
+      target_filter: "Runner",
+      build_configuration: "Release",
+      profile: "#{correct_profile_dir}/#{File.basename(profile_path)}",
+      code_signing_identity: "Apple Distribution"
+    )
     build_app(
       workspace: "Runner.xcworkspace", 
       scheme: "Runner",
