@@ -80,12 +80,18 @@ jobs:
           ARCHIVE_PATH: $HOME/build/Runner.xcarchive
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-      - name: Upload full log
+      - name: Upload fastlane log
         if: failure()
         uses: actions/upload-artifact@v4
         with:
             name: fastlane-log
             path: /tmp/fastlane.log
+      - name: Upload runner log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+            name: runner-log
+            path: /Users/runner/Library/Logs/gym/Runner-Runner.log
       - name: Clean up secrets
         if: always()
         run: |
