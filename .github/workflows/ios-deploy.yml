@@ -1,0 +1,80 @@
+name: iOS TestFlight Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  # Job 1: Build the app (no access to signing secrets)
+  build:
+    runs-on: macos-latest
+    environment: dev
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      
+      - name: Verify commit signature
+        run: |
+          git verify-commit HEAD || echo "WARNING: Unsigned commit detected"
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.9'  # Pin specific version
+          channel: 'stable'
+
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+
+      - name: Install FlutterFire CLI
+        run: flutter pub global activate flutterfire_cli
+
+      - name: Configure Firebase
+        run: |
+          flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
+            --project=${{ secrets.FIREBASE_PROJECT_ID }} \
+            --platforms=android,ios \
+            --yes
+
+      - name: Get dependencies
+        working-directory: ./
+        run: flutter pub get
+      
+      
+      - name: Build iOS (unsigned)
+        working-directory: ./ios
+        run: |
+          flutter build ios --release --no-codesign
+      - name: Generate build artifact hash
+        id: hash
+        run: |
+          # Create a hash of the build artifacts for verification
+          find build/ios -type f -exec shasum -a 256 {} \; | sort | shasum -a 256 > build-hash.txt
+          echo "hash=$(cat build-hash.txt)" >> $GITHUB_OUTPUT
+          cat build-hash.txt
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-${{ github.sha }}
+          path: |
+            build/ios
+            build-hash.txt
+          retention-days: 30
+      
+      - name: Log build completion
+        run: |
+          echo "Build completed at $(date)"
+          echo "Commit: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Build hash: $(cat build-hash.txt)"
