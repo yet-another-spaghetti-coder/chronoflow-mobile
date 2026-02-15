@@ -74,7 +74,17 @@ jobs:
       
       - name: Sign and Export IPA
         working-directory: ios
-        run: bundle exec fastlane beta
+        run: |
+          pod install
+          bundle exec fastlane beta
+          # Complete silence, only show if it fails
+          if ! bundle exec fastlane beta > /tmp/fastlane.log 2>&1; then
+            echo "❌ Fastlane failed"
+            echo "Last 20 lines:"
+            tail -20 /tmp/fastlane.log
+          exit 1
+          fi
+            echo "✅ Deployment successful"
         env:
           APPLE_ID: ${{secrets.APPLE_ID}}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
