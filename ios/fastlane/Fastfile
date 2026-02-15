@@ -38,6 +38,10 @@ platform :ios do
     new_build_number = latest_build + 1
     UI.important "Latest TestFlight build: #{latest_build}"
     UI.important "New build number: #{new_build_number}"
+    increment_build_number(
+      build_number: new_build_number,
+      xcodeproj:  "Runner.xcodeproj"
+    )
     build_app(
       workspace: "Runner.xcworkspace", 
       scheme: "Runner",
