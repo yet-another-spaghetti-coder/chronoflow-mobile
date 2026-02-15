@@ -14,17 +14,11 @@ jobs:
   # Job 1: Build the app (no access to signing secrets)
   build:
     runs-on: macos-latest
-    environment: dev
+    environment: release
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      
-      - name: Verify commit signature
-        run: |
-          git verify-commit HEAD || echo "WARNING: Unsigned commit detected"
       
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -46,34 +40,49 @@ jobs:
             --yes
 
       - name: Get dependencies
-        working-directory: ./
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
       
       
-      - name: Build iOS (unsigned)
-        working-directory: ./ios
-        run: |
-          flutter build ios --release --no-codesign
-      - name: Generate build artifact hash
-        id: hash
-        run: |
-          # Create a hash of the build artifacts for verification
-          find build/ios -type f -exec shasum -a 256 {} \; | sort | shasum -a 256 > build-hash.txt
-          echo "hash=$(cat build-hash.txt)" >> $GITHUB_OUTPUT
-          cat build-hash.txt
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          name: ios-build-${{ github.sha }}
-          path: |
-            build/ios
-            build-hash.txt
-          retention-days: 30
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: ios
       
-      - name: Log build completion
+      - name: Install Fastlane
+        working-directory: ios
         run: |
-          echo "Build completed at $(date)"
+          bundle config path vendor/bundle
+          bundle install
+      
+      - name: Decode App Store Connect API Key
+        run: |
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY }}" | base64 -d > ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+          chmod 600 ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+
+      
+      - name: Sign and Export IPA
+        working-directory: ios
+        run: bundle exec fastlane beta
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_PATH: ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+          ARCHIVE_PATH: $HOME/build/Runner.xcarchive
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+      
+      - name: Clean up secrets
+        if: always()
+        run: |
+          rm -f ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
+      
+      - name: Log deployment
+        if: always()
+        run: |
+          echo "Deployment attempt at $(date)"
           echo "Commit: ${{ github.sha }}"
           echo "Actor: ${{ github.actor }}"
-          echo "Build hash: $(cat build-hash.txt)"
+          echo "Status: ${{ job.status }}"
