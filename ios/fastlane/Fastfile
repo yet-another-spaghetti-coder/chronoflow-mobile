@@ -46,6 +46,7 @@ platform :ios do
       workspace: "Runner.xcworkspace", 
       scheme: "Runner",
       configuration: "Release",
+      clean: true,
       export_method: "app-store",
         export_options: {
           provisioningProfiles: {
