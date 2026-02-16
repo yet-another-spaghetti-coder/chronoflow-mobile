@@ -54,8 +54,7 @@ jobs:
         working-directory: ios
         run: |
           bundle install
-          pod install
-      
+          bundle exec pod install
       - name: Setup Keychain
         run: |
           security create-keychain -p "" build.keychain
