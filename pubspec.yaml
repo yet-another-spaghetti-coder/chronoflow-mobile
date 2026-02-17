@@ -24,7 +24,6 @@ dependencies:
   get_it: ^9.2.0
   fpdart: ^1.2.0
   equatable: ^2.0.8
-  adaptive_platform_ui: ^0.1.101
 
 dev_dependencies:
   flutter_test:
