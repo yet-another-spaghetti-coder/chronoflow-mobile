@@ -3,8 +3,9 @@ name: iOS TestFlight Deployment
 on:
   push:
     branches:
-      - chore/setup-ios-deploy
-
+      - main
+    tags:
+      - 'ios-release-*'
 
 permissions:
   contents: read
