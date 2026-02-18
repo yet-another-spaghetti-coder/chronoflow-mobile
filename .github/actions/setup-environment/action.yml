@@ -1,0 +1,84 @@
+name: "Setup Environment"
+description: "Sets up Java, Flutter, Firebase, Ruby, and Caches"
+inputs:
+  flutter-version:
+    required: false
+    default: "3.38.9"
+  java-version:
+    required: false
+    default: "17"
+  ruby-version:
+    required: false
+    default: "3.2"
+  platform:
+    description: "os: 'android' or 'ios'"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # 1. Setup Java
+    - name: Setup Java
+      uses: actions/setup-java@v5
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: "temurin"
+
+    # 2. Setup Gradle
+    - name: Setup Gradle
+      if: inputs.platform == 'android'
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+    # 3. Setup Flutter
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ inputs.flutter-version }}
+        channel: "stable"
+        cache: true
+        cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+    # 4. Cache Pub Dependencies
+    - name: Cache Pub Dependencies
+      uses: actions/cache@v5
+      with:
+        path: |
+          ${{ env.FLUTTER_HOME }}/.pub-cache
+          **/.packages
+          **/.flutter-plugins
+          **/.flutter-plugins-dependencies
+          **/.dart_tool/package_config.json
+        key: build-pub-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          build-pub-
+
+    # 5. Cache CocoaPods
+    - name: Cache CocoaPods
+      if: inputs.platform == 'ios'
+      uses: actions/cache@v5
+      with:
+        path: ios/Pods
+        key: ios-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: |
+          ios-pods-
+
+    # 6. Install Tools
+    - name: Install Firebase Tools
+      shell: bash
+      run: npm install -g firebase-tools
+
+    - name: Install FlutterFire CLI
+      shell: bash
+      run: flutter pub global activate flutterfire_cli
+
+    - name: Get dependencies
+      shell: bash
+      run: flutter pub get --enforce-lockfile
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+        bundler-cache: true
