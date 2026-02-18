@@ -5,6 +5,7 @@ on:
     paths-ignore: ["**.md", "docs/**"]
 permissions:
   contents: read
+  security-events: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -111,7 +112,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: MobSF/mobsfscan@main
+      - uses: MobSF/mobsfscan@0.4.5
         with:
           args: ". --sarif --output results.sarif || true"
       - name: Upload mobsfscan report
