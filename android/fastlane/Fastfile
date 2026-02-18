@@ -1,3 +1,5 @@
+require 'base64'
+
 default_platform(:android)
 
 platform :android do
@@ -18,36 +20,37 @@ platform :android do
       end
     end
 
-    # 2. Define a temporary path for the keystore
-    keystore_path = "/tmp/upload_keystore.jks"
+    # 2. Define a temporary path for the keystore (unique per run)
+    keystore_path = "/tmp/upload_keystore_#{Time.now.to_i}_#{rand(1_000_000)}.jks"
 
-    # 3. Decode the Keystore
-    
-    File.open(keystore_path, 'wb') do |f|
-      f.write(Base64.decode64(ENV['ANDROID_KEYSTORE_BASE64']))
+    begin
+      # 3. Decode the Keystore
+      File.open(keystore_path, 'wb') do |f|
+        f.write(Base64.decode64(ENV['ANDROID_KEYSTORE_BASE64']))
+      end
+      File.chmod(0600, keystore_path)
+
+      # 4. Build App Bundle (AAB)
+      gradle(
+        task: "clean bundleRelease",
+        properties: {
+          "android.injected.signing.store.file" => keystore_path,
+          "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
+          "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
+          "android.injected.signing.key.password" => ENV['KEY_PASSWORD']
+        }
+      )
+
+      # 5. Upload to Play Store (Internal Track)
+      upload_to_play_store(
+        track: "internal",
+        release_status: "draft",
+        json_key_data: ENV['PLAY_STORE_SA_JSON'],
+        skip_upload_apk: true
+      )
+    ensure
+      # 6. Cleanup
+      File.delete(keystore_path) if File.exist?(keystore_path)
     end
-    File.chmod(0600, keystore_path)
-
-    # 4. Build App Bundle (AAB)
-    gradle(
-      task: "clean bundleRelease",
-      properties: {
-        "android.injected.signing.store.file" => keystore_path,
-        "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
-        "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
-        "android.injected.signing.key.password" => ENV['KEY_PASSWORD']
-      }
-    )
-
-    # 5. Upload to Play Store (Internal Track)
-    upload_to_play_store(
-      track: "internal",
-      release_status: "draft",
-      json_key_data: ENV['PLAY_STORE_SA_JSON'],
-      skip_upload_apk: true
-    )
-
-    # 6. Cleanup
-    File.delete(keystore_path) if File.exist?(keystore_path)
   end
 end

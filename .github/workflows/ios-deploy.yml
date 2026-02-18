@@ -40,7 +40,6 @@ jobs:
       - name: Install Fastlane
         working-directory: ios
         run: |
-          bundle install
           bundle exec pod install
 
       - name: Setup Keychain
