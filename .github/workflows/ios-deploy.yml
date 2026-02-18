@@ -3,7 +3,7 @@ name: iOS TestFlight Deployment
 on:
   push:
     branches: [main]
-    tags: ["android-release-*"]
+    tags: ["ios-release-*"]
     paths-ignore: ["ios/**", "**.md"]
 
 permissions:
