@@ -47,7 +47,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      # 5. Upload Log
+      # 4. Upload Log
       - name: Upload Fastlane Log
         if: failure()
         uses: actions/upload-artifact@v6
@@ -55,12 +55,12 @@ jobs:
           name: fastlane-android-log
           path: /tmp/fastlane.log
 
-      # 6. Cleanup
+      # 5. Cleanup
       - name: Clean up secrets
         if: always()
-        run: rm -f /tmp/upload_keystore.jks
+        run: rm -f /tmp/upload_keystore_*.jks
 
-      # 7. Logging
+      # 6. Logging
       - name: Log deployment
         if: always()
         run: |
