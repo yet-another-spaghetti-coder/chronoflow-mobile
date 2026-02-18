@@ -3,20 +3,32 @@ default_platform(:android)
 platform :android do
   desc "Deploy a new version to the Google Play Internal Track"
   lane :deploy do
-    # 1. Define a temporary path for the keystore
+    # 1. Validate required environment variables
+    required_env_vars = {
+      'ANDROID_KEYSTORE_BASE64' => 'Base64 encoded Android keystore',
+      'STORE_PASSWORD' => 'Keystore password',
+      'KEY_ALIAS' => 'Key alias',
+      'KEY_PASSWORD' => 'Key password',
+      'PLAY_STORE_SA_JSON' => 'Play Store service account JSON'
+    }
+    
+    required_env_vars.each do |var, description|
+      if ENV[var].to_s.empty?
+        UI.user_error!("ENV['#{var}'] is missing! (#{description})")
+      end
+    end
+
+    # 2. Define a temporary path for the keystore
     keystore_path = "/tmp/upload_keystore.jks"
 
-    # 2. Decode the Keystore
-    if ENV['ANDROID_KEYSTORE_BASE64'].to_s.empty?
-      UI.user_error!("ENV['ANDROID_KEYSTORE_BASE64'] is missing!")
-    end
+    # 3. Decode the Keystore
     
     File.open(keystore_path, 'wb') do |f|
       f.write(Base64.decode64(ENV['ANDROID_KEYSTORE_BASE64']))
     end
     File.chmod(0600, keystore_path)
 
-    # 3. Build App Bundle (AAB)
+    # 4. Build App Bundle (AAB)
     gradle(
       task: "clean bundleRelease",
       properties: {
@@ -27,7 +39,7 @@ platform :android do
       }
     )
 
-    # 4. Upload to Play Store (Internal Track)
+    # 5. Upload to Play Store (Internal Track)
     upload_to_play_store(
       track: "internal",
       release_status: "draft",
@@ -35,7 +47,7 @@ platform :android do
       skip_upload_apk: true
     )
 
-    # 5. Cleanup
+    # 6. Cleanup
     File.delete(keystore_path) if File.exist?(keystore_path)
   end
 end

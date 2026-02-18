@@ -19,6 +19,7 @@ runs:
   steps:
     # 1. Setup Java
     - name: Setup Java
+      if: inputs.platform == 'android'
       uses: actions/setup-java@v5
       with:
         java-version: ${{ inputs.java-version }}
