@@ -25,15 +25,25 @@ platform :android do
 
     begin
       # 3. Decode the Keystore
-      File.open(keystore_path, 'wb') do |f|
-        f.write(Base64.decode64(ENV['ANDROID_KEYSTORE_BASE64']))
-      end
+      File.open(keystore_path, 'wb') { |f| f.write(Base64.decode64(ENV['ANDROID_KEYSTORE_BASE64'])) }
       File.chmod(0600, keystore_path)
 
-      # 4. Build App Bundle (AAB)
+      # 4. Fetch the highest version code
+      UI.message("Fetching latest version code from Play Store")
+      latest_version_code = google_play_track_version_codes(
+        track: "internal",
+        package_name: "edu.nus.u.chronoflow",
+        json_key_data: ENV['PLAY_STORE_SA_JSON'],
+      ).max || 0
+      
+      new_version_code = latest_version_code + 1
+      UI.message("Next version code will be: #{new_version_code}")
+
+      # 5. Build App Bundle (AAB)
       gradle(
         task: "clean bundleRelease",
         properties: {
+          "versionCodeOverride" => new_version_code.to_s,
           "android.injected.signing.store.file" => keystore_path,
           "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
           "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
@@ -41,15 +51,19 @@ platform :android do
         }
       )
 
-      # 5. Upload to Play Store (Internal Track)
+      # 6. Upload to Play Store
       upload_to_play_store(
         track: "internal",
         release_status: "draft",
         json_key_data: ENV['PLAY_STORE_SA_JSON'],
-        skip_upload_apk: true
+        skip_upload_apk: true,
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        aab: "./../build/app/outputs/bundle/release/app-release.aab"
       )
     ensure
-      # 6. Cleanup
+      # 7. Cleanup
       File.delete(keystore_path) if File.exist?(keystore_path)
     end
   end
