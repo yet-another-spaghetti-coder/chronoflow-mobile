@@ -34,7 +34,7 @@ jobs:
         run: |
           flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
             --project=${{ secrets.FIREBASE_PROJECT_ID }} \
-            --platforms=android,ios \
+            --platforms=ios \
             --yes
 
       - name: Install Fastlane

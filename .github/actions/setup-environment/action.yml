@@ -70,6 +70,11 @@ runs:
       shell: bash
       run: npm install -g firebase-tools
 
+    - name: Install xcodeproj gem
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: gem install xcodeproj
+
     - name: Install FlutterFire CLI
       shell: bash
       run: |
