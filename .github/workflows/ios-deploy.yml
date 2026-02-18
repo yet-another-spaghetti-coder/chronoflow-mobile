@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Job 1: Build the app (no access to signing secrets)
+  # Job 1: Build and sign the iOS app for TestFlight (uses signing secrets)
   build-and-deploy:
     runs-on: macos-26
     environment: release
