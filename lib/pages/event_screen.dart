@@ -1,6 +1,5 @@
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/providers/auth_provider.dart';
-import 'package:chronoflow/providers/storage_provider.dart';
 import 'package:chronoflow/widgets/background_image.dart';
 import 'package:chronoflow/widgets/sidebar.dart';
 import 'package:chronoflow/widgets/web_view.dart';
@@ -23,7 +22,7 @@ class EventScreenState extends ConsumerState<EventScreen> {
   }
 
   Future<String?> fetchCookie() {
-    return ref.read(secureStorageServiceProvider).getToken();
+    return ref.read(authProvider.notifier).exchangeJwtForOtt();
   }
 
   @override

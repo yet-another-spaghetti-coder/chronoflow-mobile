@@ -9,5 +9,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> checkLoginStatus() async => state = AuthState(isLoggedIn: await _authService.isLoggedIn());
   Future<void> signIn() async => state = await _authService.signInWithGoogle();
   Future<void> signOut() async => state = await _authService.signOut();
-  Future<void> signUp(OrganiserRegistration orgReg) async => _authService.signUp(orgReg);
+  Future<void> signUp(OrganiserRegistration orgReg) async => state = await _authService.signUp(orgReg);
+  Future<String> exchangeJwtForOtt() async => _authService.exchangeToken();
 }
