@@ -76,14 +76,12 @@ class AuthService {
     if (userCredential.credential?.accessToken != null) {
       final formPayload = orgReg.toJson();
 
-      final response = await client.post(Constants.registerOrganizerEndpoint, {}, {
+      await client.post(Constants.registerOrganizerEndpoint, {}, {
         'jwtToken': userCredential.credential!.accessToken,
         ...formPayload,
       });
-      return signOut();
     }
-    await _storageService.deleteToken();
-    return AuthState(errorMessage: 'Something went wrong');
+    return signOut();
   }
 
   Future<AuthState> signOut() async {
