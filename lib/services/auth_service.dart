@@ -76,7 +76,7 @@ class AuthService {
     if (userCredential.credential?.accessToken != null) {
       final formPayload = orgReg.toJson();
 
-      await client.post(Constants.registerOrganizerEndpoint, {}, {
+      final response = await client.post(Constants.registerOrganizerEndpoint, {}, {
         'jwtToken': userCredential.credential!.accessToken,
         ...formPayload,
       });

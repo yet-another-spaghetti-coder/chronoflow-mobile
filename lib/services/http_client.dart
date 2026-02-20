@@ -24,7 +24,7 @@ class HttpClient {
     try {
       final defaultHeaders = {
         'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type':'application/json'
       };
       final response = await http.post(
         Uri.parse('$baseUrl$endpoint'),
