@@ -1,0 +1,70 @@
+name: Android Internal Deployment
+
+on:
+  push:
+    branches: [main]
+    tags: ["android-release-*"]
+    paths-ignore: ["ios/**", "**.md"]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v6
+
+      # 1. Setup Environment (Java, Gradle, Flutter, Ruby)
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+        with:
+          platform: "android"
+          ruby-version: "4.0.1"
+
+      # 2. Configure Firebase
+      - name: Configure Firebase
+        run: |
+          flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
+            --project=${{ secrets.FIREBASE_PROJECT_ID }} \
+            --platforms=android \
+            --yes
+
+      # 3. Run Fastlane
+      - name: Run Fastlane
+        working-directory: android
+        run: bundle exec fastlane deploy
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          PLAY_STORE_SA_JSON: ${{ secrets.PLAY_STORE_SA_JSON }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      # 4. Upload Log
+      - name: Upload Fastlane Log
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: fastlane-android-log
+          path: /tmp/fastlane.log
+
+      # 5. Cleanup
+      - name: Clean up secrets
+        if: always()
+        run: rm -f /tmp/upload_keystore_*.jks
+
+      # 6. Logging
+      - name: Log deployment
+        if: always()
+        run: |
+          echo "Deployment attempt at $(date)"
+          echo "Commit: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Status: ${{ job.status }}"
