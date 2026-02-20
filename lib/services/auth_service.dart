@@ -1,4 +1,5 @@
 import 'package:chronoflow/core/constants.dart';
+import 'package:chronoflow/models/api_response.dart';
 import 'package:chronoflow/models/organiser_registration.dart';
 import 'package:chronoflow/services/http_client.dart';
 import 'package:chronoflow/services/storage_service.dart';
@@ -10,7 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SecureStorageService _storageService;
-
+  final HttpClient client = HttpClient();
   AuthService(this._storageService);
   Future<bool> isLoggedIn() async {
     final user = _auth.currentUser;
@@ -58,7 +59,7 @@ class AuthService {
     }
   }
 
-  Future<void> signUp(OrganiserRegistration orgReg) async {
+  Future<AuthState> signUp(OrganiserRegistration orgReg) async {
     final googleUser = await GoogleSignIn.instance.authenticate();
 
     // Obtain the auth details from the request
@@ -73,14 +74,14 @@ class AuthService {
       credential,
     );
     if (userCredential.credential?.accessToken != null) {
-      final client = HttpClient();
       final formPayload = orgReg.toJson();
-      await client.post(Constants.registerOrganizerEndpoint, {
+
+      await client.post(Constants.registerOrganizerEndpoint, {}, {
         'jwtToken': userCredential.credential!.accessToken,
         ...formPayload,
       });
-      await signOut();
     }
+    return signOut();
   }
 
   Future<AuthState> signOut() async {
@@ -92,6 +93,16 @@ class AuthService {
       debugPrint('Error during sign out: $e');
       return AuthState(isLoggedIn: true, errorMessage: e.toString());
     }
+  }
+
+  Future<String> exchangeToken() async {
+    final jwtToken = await _storageService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $jwtToken',
+    };
+    final result = await client.post(Constants.tokenExchangeEndpoint, headers, {}) as Map<String, dynamic>;
+    final responseBody = ApiResponse.fromJson(result);
+    return responseBody.data.toString();
   }
 
   User? getCurrentUser() {
