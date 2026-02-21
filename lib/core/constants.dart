@@ -14,4 +14,6 @@ class Constants {
   static String chronoflowBackend = 'http://localhost:8080';
   static String registerOrganizerEndpoint = '/users/reg/sso-organizer';
   static String tokenExchangeEndpoint = '/users/auth/exchangeToken';
+
+  static String raspWatcherEmail = 'chronoflow2025@gmail.com';
 }

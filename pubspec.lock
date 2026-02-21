@@ -251,6 +251,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: ee8068e0e1cd16c4a82714119918efdeed33b3ba7772c54b5d094ab53f9b7fd1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.33"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -341,6 +349,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  freerasp:
+    dependency: "direct main"
+    description:
+      name: freerasp
+      sha256: "0b38ba8e1740ca187231c31de04d667e045a669b91d838660bb135bf632c2327"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.4.0"
   frontend_server_client:
     dependency: transitive
     description:
