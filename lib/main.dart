@@ -1,4 +1,3 @@
-import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:chronoflow/core/constants.dart';
