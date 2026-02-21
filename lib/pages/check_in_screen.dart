@@ -7,6 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+// NOTE:
+// This screen uses the device camera via `mobile_scanner` and `permission_handler`.
+// For iOS, you **must** add an NSCameraUsageDescription entry to ios/Runner/Info.plist, e.g.:
+//   <key>NSCameraUsageDescription</key>
+//   <string>This app uses the camera to scan check-in QR codes.</string>
+// Without this, the app will crash or be rejected by App Store review.
+//
+// On Android, ensure that android.permission.CAMERA is declared in AndroidManifest.xml.
 class CheckInScreen extends ConsumerStatefulWidget {
   const CheckInScreen({super.key});
 
