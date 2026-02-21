@@ -2,6 +2,7 @@ class Constants {
   static const String authScreen = './auth';
   static const String eventScreen = './event';
   static const String registrationScreen = './registration';
+  static const String checkInScreen = './check-in';
   static const String appTitle = 'ChronoFlow';
   static const String googleSignInButtonText = 'Sign in with Google';
   static const String googleSignUpButtonText = 'Sign up with Google';

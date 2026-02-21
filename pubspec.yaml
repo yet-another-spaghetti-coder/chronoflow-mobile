@@ -24,6 +24,8 @@ dependencies:
   get_it: ^9.2.0
   fpdart: ^1.2.0
   equatable: ^2.0.8
+  mobile_scanner: ^7.2.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
@@ -35,7 +37,7 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/icon.png"
-  
+
 flutter:
   uses-material-design: true
 
