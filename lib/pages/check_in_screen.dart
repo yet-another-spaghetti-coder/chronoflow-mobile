@@ -102,7 +102,6 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     if (_isCupertinoPlatform) {
       showCupertinoDialog<void>(
         context: context,
-        barrierDismissible: false,
         builder: (ctx) => CupertinoAlertDialog(
           title: const Text('Confirm Check-In'),
           content: Text('Check in attendee: $code?'),
