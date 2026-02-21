@@ -1,4 +1,4 @@
-name: OSV-Scanner PR Scan
+name: OSV-Scanner Scheduled Scan
 on:
   schedule:
     - cron: "30 12 * * 1"
@@ -10,5 +10,4 @@ permissions:
 
 jobs:
   osv-scan:
-    - name: Run OSV-Scanner
-      uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.3"
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.3
