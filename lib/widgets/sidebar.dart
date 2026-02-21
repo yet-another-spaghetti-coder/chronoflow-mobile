@@ -19,6 +19,11 @@ class MainDrawer extends StatelessWidget {
             text: 'HOME',
             onTap: () => Navigator.pushReplacementNamed(context, Constants.eventScreen),
           ),
+          buildListTile(
+            icon: Icons.qr_code_scanner,
+            text: 'CHECK IN',
+            onTap: () => Navigator.pushNamed(context, Constants.checkInScreen),
+          ),
           buildListTile(icon: Icons.logout, text: 'LOGOUT', onTap: signOut),
         ],
       ),
