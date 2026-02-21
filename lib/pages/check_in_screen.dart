@@ -31,6 +31,8 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
 
   Future<void> _checkCameraPermission() async {
     final status = await Permission.camera.status;
+    if (!mounted) return;
+
     setState(() {
       _cameraPermission = status;
       _isCheckingPermission = false;
@@ -43,6 +45,8 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
 
   Future<void> _requestCameraPermission() async {
     final status = await Permission.camera.request();
+    if (!mounted) return;
+
     setState(() {
       _cameraPermission = status;
     });
@@ -158,19 +162,19 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
 
     final result = await checkInService.checkIn(attendeeId);
 
-    if (mounted) {
-      result.fold(
-        (error) {
-          _showResultMessage(
-            message: 'Check-in failed: $error',
-            isSuccess: false,
-          );
-        },
-        (_) {
-          _showResultMessage(message: 'Check-in successful!', isSuccess: true);
-        },
-      );
-    }
+    if (!mounted) return;
+
+    result.fold(
+      (error) {
+        _showResultMessage(
+          message: 'Check-in failed: $error',
+          isSuccess: false,
+        );
+      },
+      (_) {
+        _showResultMessage(message: 'Check-in successful!', isSuccess: true);
+      },
+    );
 
     _resumeScanning();
   }
