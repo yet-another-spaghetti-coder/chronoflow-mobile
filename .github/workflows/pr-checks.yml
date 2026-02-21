@@ -124,5 +124,4 @@ jobs:
           category: mobsfscan
 
   osv-scan:
-    - name: Run OSV-Scanner
-      uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.3.3"
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.3.3"
