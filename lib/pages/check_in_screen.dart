@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:chronoflow/providers/check_in_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -76,7 +76,6 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     final code = barcodes.first.rawValue;
     if (code == null || code.isEmpty) return;
 
-    // Debounce: ignore same code within 2 seconds
     if (code == _lastScannedCode) return;
 
     _debounceTimer?.cancel();
@@ -94,30 +93,64 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
       _isProcessing = true;
     });
 
-    // Actually pause the scanner
     _controller?.stop();
 
     _showConfirmationDialog(code);
   }
 
   void _showConfirmationDialog(String code) {
-    AdaptiveAlertDialog.show(
+    if (_isCupertinoPlatform) {
+      showCupertinoDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: const Text('Confirm Check-In'),
+          content: Text('Check in attendee: $code?'),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                _resumeScanning();
+              },
+              child: const Text('CANCEL'),
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                _performCheckIn(code);
+              },
+              child: const Text('CONFIRM'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    showDialog<void>(
       context: context,
-      title: 'Confirm Check-In',
-      message: 'Check in attendee: $code?',
-      actions: [
-        AlertAction(
-          title: 'CANCEL',
-          style: AlertActionStyle.cancel,
-          onPressed: _resumeScanning,
-        ),
-        AlertAction(
-          title: 'CONFIRM',
-          onPressed: () {
-            _performCheckIn(code);
-          },
-        ),
-      ],
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Confirm Check-In'),
+        content: Text('Check in attendee: $code?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _resumeScanning();
+            },
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _performCheckIn(code);
+            },
+            child: const Text('CONFIRM'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -129,18 +162,13 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     if (mounted) {
       result.fold(
         (error) {
-          AdaptiveSnackBar.show(
-            context,
+          _showResultMessage(
             message: 'Check-in failed: $error',
-            type: AdaptiveSnackBarType.error,
+            isSuccess: false,
           );
         },
         (_) {
-          AdaptiveSnackBar.show(
-            context,
-            message: 'Check-in successful!',
-            type: AdaptiveSnackBarType.success,
-          );
+          _showResultMessage(message: 'Check-in successful!', isSuccess: true);
         },
       );
     }
@@ -157,19 +185,92 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     });
   }
 
+  bool get _isCupertinoPlatform {
+    final platform = Theme.of(context).platform;
+    return platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+  }
+
+  void _showResultMessage({required String message, required bool isSuccess}) {
+    if (_isCupertinoPlatform) {
+      showCupertinoDialog<void>(
+        context: context,
+        builder: (ctx) => CupertinoAlertDialog(
+          content: Text(message),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isSuccess ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Widget _buildScreenScaffold({required Widget body}) {
+    if (_isCupertinoPlatform) {
+      return CupertinoPageScaffold(
+        navigationBar: const CupertinoNavigationBar(
+          middle: Text('Check In'),
+        ),
+        child: SafeArea(child: body),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Check In'),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      body: body,
+    );
+  }
+
+  Widget _buildPrimaryButton({
+    required VoidCallback onPressed,
+    required String label,
+  }) {
+    if (_isCupertinoPlatform) {
+      return CupertinoButton.filled(
+        onPressed: onPressed,
+        child: Text(label),
+      );
+    }
+
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(label),
+    );
+  }
+
+  Widget _buildProgressIndicator({Color? materialColor}) {
+    if (_isCupertinoPlatform) {
+      return const CupertinoActivityIndicator();
+    }
+
+    return CircularProgressIndicator(color: materialColor);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isCheckingPermission) {
-      return const AdaptiveScaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return _buildScreenScaffold(
+        body: Center(child: _buildProgressIndicator()),
       );
     }
 
     if (_cameraPermission.isPermanentlyDenied) {
-      return AdaptiveScaffold(
-        appBar: const AdaptiveAppBar(
-          title: 'Check In',
-        ),
+      return _buildScreenScaffold(
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -188,7 +289,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                AdaptiveButton(
+                _buildPrimaryButton(
                   onPressed: _openAppSettings,
                   label: 'Open Settings',
                 ),
@@ -200,10 +301,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     }
 
     if (_cameraPermission.isDenied) {
-      return AdaptiveScaffold(
-        appBar: const AdaptiveAppBar(
-          title: 'Check In',
-        ),
+      return _buildScreenScaffold(
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -222,7 +320,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                AdaptiveButton(
+                _buildPrimaryButton(
                   onPressed: _requestCameraPermission,
                   label: 'Grant Permission',
                 ),
@@ -233,10 +331,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
       );
     }
 
-    return AdaptiveScaffold(
-      appBar: const AdaptiveAppBar(
-        title: 'Check In',
-      ),
+    return _buildScreenScaffold(
       body: Stack(
         children: [
           MobileScanner(
@@ -275,13 +370,27 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
             const ColoredBox(
               color: Colors.black54,
               child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
+                child: _ProcessingIndicator(),
               ),
             ),
         ],
       ),
     );
+  }
+}
+
+class _ProcessingIndicator extends StatelessWidget {
+  const _ProcessingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    final platform = Theme.of(context).platform;
+    final isCupertino = platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+
+    if (isCupertino) {
+      return const CupertinoActivityIndicator();
+    }
+
+    return const CircularProgressIndicator(color: Colors.white);
   }
 }

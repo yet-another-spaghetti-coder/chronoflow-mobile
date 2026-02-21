@@ -33,8 +33,8 @@ class CheckInService {
     try {
       await _httpClient.post(
         '/attendees/staff-scan',
+        {'Authorization': 'Bearer $jwtToken'},
         {'token': token},
-        headers: {'Authorization': 'Bearer $jwtToken'},
       );
       return const Right('Check-in successful');
     } on Exception catch (e) {
