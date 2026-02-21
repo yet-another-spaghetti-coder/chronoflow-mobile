@@ -1,0 +1,121 @@
+name: iOS TestFlight Deployment
+
+on:
+  push:
+    branches: [main]
+    tags: ["ios-release-*"]
+    paths-ignore: ["android/**", "**.md"]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Build and sign the iOS app for TestFlight (uses signing secrets)
+  build-and-deploy:
+    runs-on: macos-26
+    environment: release
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # Setup Environment
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+        with:
+          platform: "ios"
+          ruby-version: "3.2"
+
+      - name: Configure Firebase
+        run: |
+          flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
+            --project=${{ secrets.FIREBASE_PROJECT_ID }} \
+            --platforms=android,ios \
+            --yes
+
+      - name: Install Fastlane
+        working-directory: ios
+        run: |
+          bundle exec pod install
+
+      - name: Setup Keychain
+        run: |
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+
+      - name: Decode App Store Connect API Key
+        run: |
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY }}" | base64 -d > ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+          chmod 600 ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+
+      - name: Install Certificates
+        working-directory: ios
+        run: |
+          bundle exec fastlane run_match > /tmp/fastlane-match.log
+        env:
+          APPLE_ID: ${{secrets.APPLE_ID}}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_KEYCHAIN_PASSWORD:
+
+      - name: Sign and Export IPA
+        working-directory: ios
+        run: |
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$HOME/Library/Keychains/build.keychain-db"
+          # Complete silence, only show if it fails
+          if ! bundle exec fastlane beta > /tmp/fastlane.log 2>&1; then
+            echo "❌ Fastlane failed"
+            echo "Last 60 lines:"
+            tail -60 /tmp/fastlane.log
+          exit 1
+          fi
+            echo "✅ Deployment successful"
+        env:
+          APPLE_ID: ${{secrets.APPLE_ID}}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_PATH: ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+          ARCHIVE_PATH: $HOME/build/Runner.xcarchive
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_KEYCHAIN_PASSWORD:
+
+      - name: Upload fastlane log
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: fastlane-ios-log
+          path: /tmp/fastlane.log
+
+      - name: Upload fastlane match log
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: fastlane-match-log
+          path: /tmp/fastlane-match.log
+
+      - name: Upload runner log
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: runner-log
+          path: /Users/runner/Library/Logs/gym/Runner-Runner.log
+
+      - name: Clean up secrets
+        if: always()
+        run: |
+          security delete-keychain ~/Library/Keychains/build.keychain-db
+          rm -f ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
+
+      - name: Log deployment
+        if: always()
+        run: |
+          echo "Deployment attempt at $(date)"
+          echo "Commit: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Status: ${{ job.status }}"
