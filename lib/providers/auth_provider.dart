@@ -1,5 +1,4 @@
 import 'package:chronoflow/notifiers/auth_notifier.dart';
-import 'package:chronoflow/providers/http_client_provider.dart';
 import 'package:chronoflow/providers/storage_provider.dart';
 import 'package:chronoflow/services/auth_service.dart';
 import 'package:chronoflow/states/auth_state.dart';
@@ -8,8 +7,7 @@ import 'package:flutter_riverpod/legacy.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   final secureStorageService = ref.watch(secureStorageServiceProvider);
-  final httpClient = ref.watch(httpClientProvider);
-  return AuthService(secureStorageService, httpClient);
+  return AuthService(secureStorageService);
 });
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
