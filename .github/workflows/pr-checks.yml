@@ -100,17 +100,12 @@ jobs:
             -not -name "firebase_options.dart")
       - run: flutter analyze --fatal-infos
       - run: flutter test --coverage --concurrency=4
-      - name: Install lcov
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lcov
       - name: Report code coverage
-        uses: zgosalvez/github-actions-report-lcov@v7
+        uses: Nef10/lcov-reporter-action@v0.6.1
         with:
-          coverage-files: coverage/lcov.info
-          minimum-coverage: 0
-          artifact-name: code-coverage-report
+          lcov-file: ./coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-number: ${{ github.event.pull_request.number }}
 
   security-scan:
     runs-on:
