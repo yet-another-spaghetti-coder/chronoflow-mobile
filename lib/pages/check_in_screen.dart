@@ -1,20 +1,14 @@
 import 'dart:async';
 
 import 'package:chronoflow/providers/check_in_provider.dart';
+import 'package:chronoflow/widgets/permission_denied_view.dart';
+import 'package:chronoflow/widgets/qr_scanner_overlay.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-// NOTE:
-// This screen uses the device camera via `mobile_scanner` and `permission_handler`.
-// For iOS, you **must** add an NSCameraUsageDescription entry to ios/Runner/Info.plist, e.g.:
-//   <key>NSCameraUsageDescription</key>
-//   <string>This app uses the camera to scan check-in QR codes.</string>
-// Without this, the app will crash or be rejected by App Store review.
-//
-// On Android, ensure that android.permission.CAMERA is declared in AndroidManifest.xml.
 class CheckInScreen extends ConsumerStatefulWidget {
   const CheckInScreen({super.key});
 
@@ -24,11 +18,6 @@ class CheckInScreen extends ConsumerStatefulWidget {
 
 class _CheckInScreenState extends ConsumerState<CheckInScreen> {
   MobileScannerController? _controller;
-  bool _isScanning = true;
-  String? _lastScannedCode;
-  Timer? _debounceTimer;
-  bool _isProcessing = false;
-  PermissionStatus _cameraPermission = PermissionStatus.denied;
   bool _isCheckingPermission = true;
 
   @override
@@ -38,28 +27,29 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
   }
 
   Future<void> _checkCameraPermission() async {
-    final status = await Permission.camera.status;
+    final notifier = ref.read(checkInNotifierProvider.notifier);
+    await notifier.checkCameraPermission();
+
     if (!mounted) return;
 
+    final state = ref.read(checkInNotifierProvider);
     setState(() {
-      _cameraPermission = status;
       _isCheckingPermission = false;
     });
 
-    if (status.isGranted) {
+    if (state.cameraPermission.isGranted) {
       _initializeController();
     }
   }
 
   Future<void> _requestCameraPermission() async {
-    final status = await Permission.camera.request();
+    final notifier = ref.read(checkInNotifierProvider.notifier);
+    await notifier.requestCameraPermission();
+
     if (!mounted) return;
 
-    setState(() {
-      _cameraPermission = status;
-    });
-
-    if (status.isGranted) {
+    final state = ref.read(checkInNotifierProvider);
+    if (state.cameraPermission.isGranted) {
       _initializeController();
     }
   }
@@ -75,12 +65,11 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
   @override
   void dispose() {
     _controller?.dispose();
-    _debounceTimer?.cancel();
     super.dispose();
   }
 
   void _onDetect(BarcodeCapture capture) {
-    if (!_isScanning || _isProcessing) return;
+    final notifier = ref.read(checkInNotifierProvider.notifier);
 
     final barcodes = capture.barcodes;
     if (barcodes.isEmpty) return;
@@ -88,26 +77,13 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     final code = barcodes.first.rawValue;
     if (code == null || code.isEmpty) return;
 
-    if (code == _lastScannedCode) return;
+    notifier.onBarcodeDetected(code);
 
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(seconds: 2), () {
-      _lastScannedCode = null;
-    });
-
-    _lastScannedCode = code;
-    _handleScan(code);
-  }
-
-  void _handleScan(String code) {
-    setState(() {
-      _isScanning = false;
-      _isProcessing = true;
-    });
-
-    _controller?.stop();
-
-    _showConfirmationDialog(code);
+    final state = ref.read(checkInNotifierProvider);
+    if (state.isProcessing && state.lastScannedCode != null) {
+      _controller?.stop();
+      _showConfirmationDialog(code);
+    }
   }
 
   void _showConfirmationDialog(String code) {
@@ -166,34 +142,19 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
   }
 
   Future<void> _performCheckIn(String attendeeId) async {
-    final checkInService = ref.read(checkInServiceProvider);
-
-    final result = await checkInService.checkIn(attendeeId);
+    final notifier = ref.read(checkInNotifierProvider.notifier);
+    await notifier.performCheckIn(attendeeId);
 
     if (!mounted) return;
 
-    result.fold(
-      (error) {
-        _showResultMessage(
-          message: 'Check-in failed: $error',
-          isSuccess: false,
-        );
-      },
-      (_) {
-        _showResultMessage(message: 'Check-in successful!', isSuccess: true);
-      },
-    );
+    _showResultMessage(message: 'Check-in processed', isSuccess: true);
 
     _resumeScanning();
   }
 
   void _resumeScanning() {
     _controller?.start();
-
-    setState(() {
-      _isScanning = true;
-      _isProcessing = false;
-    });
+    final _ = ref.read(checkInNotifierProvider.notifier)..resumeScanning();
   }
 
   bool get _isCupertinoPlatform {
@@ -247,97 +208,38 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     );
   }
 
-  Widget _buildPrimaryButton({
-    required VoidCallback onPressed,
-    required String label,
-  }) {
-    if (_isCupertinoPlatform) {
-      return CupertinoButton.filled(
-        onPressed: onPressed,
-        child: Text(label),
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Text(label),
-    );
-  }
-
-  Widget _buildProgressIndicator({Color? materialColor}) {
+  Widget _buildProgressIndicator() {
     if (_isCupertinoPlatform) {
       return const CupertinoActivityIndicator();
     }
 
-    return CircularProgressIndicator(color: materialColor);
+    return const CircularProgressIndicator();
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(checkInNotifierProvider);
+
     if (_isCheckingPermission) {
       return _buildScreenScaffold(
         body: Center(child: _buildProgressIndicator()),
       );
     }
 
-    if (_cameraPermission.isPermanentlyDenied) {
+    if (state.cameraPermission.isPermanentlyDenied) {
       return _buildScreenScaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.camera_alt, size: 64, color: Colors.grey),
-                const SizedBox(height: 16),
-                const Text(
-                  'Camera Permission Denied',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Camera permission was denied. Please enable it in app settings to use QR scanning.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                _buildPrimaryButton(
-                  onPressed: _openAppSettings,
-                  label: 'Open Settings',
-                ),
-              ],
-            ),
-          ),
+        body: PermissionDeniedView(
+          isPermanentlyDenied: true,
+          onActionPressed: _openAppSettings,
         ),
       );
     }
 
-    if (_cameraPermission.isDenied) {
+    if (state.cameraPermission.isDenied) {
       return _buildScreenScaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.camera_alt, size: 64, color: Colors.grey),
-                const SizedBox(height: 16),
-                const Text(
-                  'Camera Access Required',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Camera access is required to scan QR codes for check-in.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                _buildPrimaryButton(
-                  onPressed: _requestCameraPermission,
-                  label: 'Grant Permission',
-                ),
-              ],
-            ),
-          ),
+        body: PermissionDeniedView(
+          isPermanentlyDenied: false,
+          onActionPressed: _requestCameraPermission,
         ),
       );
     }
@@ -349,16 +251,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
             controller: _controller,
             onDetect: _onDetect,
           ),
-          Center(
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
+          const QRScannerOverlay(),
           Positioned(
             bottom: 50,
             left: 0,
@@ -377,7 +270,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
               ),
             ),
           ),
-          if (_isProcessing)
+          if (state.isProcessing)
             const ColoredBox(
               color: Colors.black54,
               child: Center(
