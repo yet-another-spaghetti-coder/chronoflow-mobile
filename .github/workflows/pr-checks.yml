@@ -7,6 +7,7 @@ permissions:
   actions: read
   contents: read
   security-events: write
+  pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -99,10 +100,17 @@ jobs:
             -not -name "firebase_options.dart")
       - run: flutter analyze --fatal-infos
       - run: flutter test --coverage --concurrency=4
-      - uses: codecov/codecov-action@v5
-        if: always()
+      - name: Install lcov
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lcov
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v7
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          coverage-files: coverage/lcov.info
+          minimum-coverage: 0
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   security-scan:
     runs-on:
