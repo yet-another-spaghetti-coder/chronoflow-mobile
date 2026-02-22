@@ -99,10 +99,13 @@ jobs:
             -not -name "firebase_options.dart")
       - run: flutter analyze --fatal-infos
       - run: flutter test --coverage --concurrency=4
-      - uses: codecov/codecov-action@v5
-        if: always()
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v7
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          coverage-files: coverage/lcov.info
+          minimum-coverage: 0
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   security-scan:
     runs-on:
