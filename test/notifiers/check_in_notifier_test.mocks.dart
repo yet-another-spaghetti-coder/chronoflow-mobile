@@ -35,8 +35,7 @@ class MockCheckInService extends _i1.Mock implements _i2.CheckInService {
 
   @override
   String? extractTokenFromUrl(String? qrCode) =>
-      (super.noSuchMethod(Invocation.method(#extractTokenFromUrl, [qrCode]))
-          as String?);
+      (super.noSuchMethod(Invocation.method(#extractTokenFromUrl, [qrCode])) as String?);
 
   @override
   _i3.Future<_i4.Either<String, String>> checkIn(String? qrCode) =>
