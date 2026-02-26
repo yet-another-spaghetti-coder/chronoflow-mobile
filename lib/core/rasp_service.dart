@@ -1,13 +1,24 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 import 'package:chronoflow/core/constants.dart';
 import 'package:freerasp/freerasp.dart';
 
 class RaspService {
   static Future<void> initialize() async {
-    final config = TalsecConfig(
+    final defaultConfig = TalsecConfig(
       watcherMail: Constants.raspWatcherEmail,
       killOnBypass: true,
     );
+    final iosConfig = TalsecConfig(
+      iosConfig: IOSConfig(
+        bundleIds: ['edu.nus.u.chronoflow'],
+        teamId: '2U93L9FLAY',
+      ),
+      watcherMail: Constants.raspWatcherEmail,
+      killOnBypass: true,
+    );
+
+
 
     final callback = ThreatCallback(
       onAppIntegrity: () => _handleThreat('App integrity'),
@@ -35,7 +46,11 @@ class RaspService {
     );
 
     await Talsec.instance.attachListener(callback);
-    await Talsec.instance.start(config);
+    if (Platform.isIOS) {
+      await Talsec.instance.start(iosConfig);
+    } else {
+      await Talsec.instance.start(defaultConfig);
+    }
   }
 
   static void _handleThreat(String threatType, [Object? details]) {
