@@ -6,7 +6,7 @@ class SecureStorageService {
   final FlutterSecureStorage _storage;
   final IOSOptions _iosOptions = const IOSOptions(
     accessibility: KeychainAccessibility.first_unlock, // accessible after first unlock post-reboot
-    accountName: 'ChronoflowAccount',                       // groups keys under one keychain account
+    accountName: 'ChronoflowAccount', // groups keys under one keychain account
   );
   SecureStorageService(this._storage);
 

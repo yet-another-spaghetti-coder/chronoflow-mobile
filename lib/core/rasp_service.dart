@@ -18,8 +18,6 @@ class RaspService {
       killOnBypass: true,
     );
 
-
-
     final callback = ThreatCallback(
       onAppIntegrity: () => _handleThreat('App integrity'),
       onObfuscationIssues: () => _handleThreat('Obfuscation issues'),
