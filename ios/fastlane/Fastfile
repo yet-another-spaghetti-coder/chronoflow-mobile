@@ -2,13 +2,6 @@ default_platform(:ios)
 
 platform :ios do
   desc "Push a new beta build to TestFlight"
-  lane :test do
-    sh("pwd")
-    sh("cd ../")
-    project_root = File.expand_path("../..", Dir.pwd)
-    sh("echo 'Project root: #{project_root}'")
-    sh("pwd")
-  end
   lane :beta do
     api_key = app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_KEY_ID"],
@@ -51,7 +44,7 @@ platform :ios do
 
     build_app(
       skip_build_archive: true,
-      archive_path: archive_path, # Using the exact same absolute variable
+      archive_path: archive_path,
       export_method: "app-store",
       export_team_id: "2U93L9FLAY",
       clean: true,
