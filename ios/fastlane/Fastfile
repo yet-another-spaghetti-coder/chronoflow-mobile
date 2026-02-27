@@ -30,9 +30,19 @@ platform :ios do
       log: true
     )
 
-    sh(
-      "cd ../ && xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath ../build/ios/archive/Runner.xcarchive CODE_SIGNING_ALLOWED=NO"
-    )
+    Dir.chdir("..") do
+      sh(
+        "xcodebuild archive \
+          -workspace ios/Runner.xcworkspace \
+          -scheme Runner \
+          -configuration Release \
+          -archivePath build/ios/archive/Runner.xcarchive \
+          CODE_SIGNING_ALLOWED=NO \
+          SKIP_FLUTTER_BUILD=true",
+        log: true
+      )
+      sh("find build/ios/archive -name \"*.xcarchive\"", log: true)
+    end
 
     build_app(
       skip_build_archive: true,
