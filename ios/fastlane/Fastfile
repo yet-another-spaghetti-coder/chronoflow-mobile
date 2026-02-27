@@ -2,16 +2,12 @@ default_platform(:ios)
 
 platform :ios do
   desc "Push a new beta build to TestFlight"
-  
   lane :beta do
     api_key = app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
       key_filepath: ENV["APP_STORE_CONNECT_KEY_PATH"]
     )
-
-
-
 
     latest_build = latest_testflight_build_number(
       api_key: api_key,
@@ -27,15 +23,31 @@ platform :ios do
       build_number: new_build_number,
       xcodeproj: "Runner.xcodeproj"
     )
+    project_root = File.expand_path("../..", Dir.pwd)
+    debug_info_path = "#{project_root}/debug-symbols/#{new_build_number}"
+    sh(
+      "flutter build ios --release --obfuscate --split-debug-info=#{debug_info_path} --no-codesign",
+      log: true
+    )
+    archive_path = "#{project_root}/build/ios/archive/Runner.xcarchive"
 
-
+    sh(
+      "cd #{project_root} && xcodebuild archive " \
+      "-workspace ios/Runner.xcworkspace " \
+      "-scheme Runner " \
+      "-configuration Release " \
+      "-archivePath #{archive_path} " \
+      "CODE_SIGNING_ALLOWED=NO " \
+      "SKIP_FLUTTER_BUILD=true",
+      log: true
+    )
 
     build_app(
-      workspace: "Runner.xcworkspace",
-      scheme: "Runner",
-      configuration: "Release",
-      clean: true,
+      skip_build_archive: true,
+      archive_path: archive_path,
       export_method: "app-store",
+      export_team_id: "2U93L9FLAY",
+      clean: true,
       export_options: {
         provisioningProfiles: {
           "edu.nus.u.chronoflow" => "match AppStore edu.nus.u.chronoflow"
@@ -49,6 +61,10 @@ platform :ios do
       distribute_external: false,
       notify_external_testers: false
     )
+
+    sh("gsutil cp #{debug_info_path}/app.ios-arm64.symbols gs://#{ENV["BUCKET_NAME"]}/iOS/#{new_build_number}/")
+
+    
   end
   lane :run_match do
     match(

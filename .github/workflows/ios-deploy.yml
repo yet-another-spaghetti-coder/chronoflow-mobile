@@ -30,9 +30,17 @@ jobs:
           platform: "ios"
           ruby-version: "3.2"
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Configure Firebase
         run: |
-          flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
+          BUNDLE_GEMFILE=ios/Gemfile bundle exec flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
             --project=${{ secrets.FIREBASE_PROJECT_ID }} \
             --platforms=android,ios \
             --yes
@@ -79,7 +87,7 @@ jobs:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_PATH: ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
-          ARCHIVE_PATH: $HOME/build/Runner.xcarchive
+          BUCKET_NAME: ${{ secrets.GCS_BUCKET }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD:
@@ -111,7 +119,7 @@ jobs:
           security delete-keychain ~/Library/Keychains/build.keychain-db
           rm -f ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
           rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
-
+  
       - name: Log deployment
         if: always()
         run: |

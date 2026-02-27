@@ -1,27 +1,36 @@
+import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
   final FlutterSecureStorage _storage;
-
+  final IOSOptions _iosOptions = const IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock, // accessible after first unlock post-reboot
+    accountName: 'ChronoflowAccount', // groups keys under one keychain account
+  );
   SecureStorageService(this._storage);
 
   Future<void> saveToken(String token) async {
-    await _storage.write(key: 'jwt_token', value: token);
+    if (Platform.isIOS) {
+      await _storage.write(key: 'jwt_token', value: token, iOptions: _iosOptions);
+    } else {
+      await _storage.write(key: 'jwt_token', value: token);
+    }
   }
 
   Future<String?> getToken() {
-    return _storage.read(key: 'jwt_token');
+    if (Platform.isIOS) {
+      return _storage.read(key: 'jwt_token', iOptions: _iosOptions);
+    } else {
+      return _storage.read(key: 'jwt_token');
+    }
   }
 
   Future<void> deleteToken() async {
-    await _storage.delete(key: 'jwt_token');
-  }
-
-  Future<void> saveValue(String key, String value) async {
-    await _storage.write(key: key, value: value);
-  }
-
-  Future<String?> getValue(String key) async {
-    return _storage.read(key: key);
+    if (Platform.isIOS) {
+      return _storage.delete(key: 'jwt_token', iOptions: _iosOptions);
+    } else {
+      return _storage.delete(key: 'jwt_token');
+    }
   }
 }
