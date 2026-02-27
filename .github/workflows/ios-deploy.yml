@@ -58,7 +58,6 @@ jobs:
           bundle exec fastlane run_match > /tmp/fastlane-match.log
         env:
           APPLE_ID: ${{secrets.APPLE_ID}}
-          BUCKET_NAME: ${{ secrets.GCS_BUCKET }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD:
@@ -80,7 +79,7 @@ jobs:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_PATH: ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
-          ARCHIVE_PATH: $HOME/build/Runner.xcarchive
+          BUCKET_NAME: ${{ secrets.GCS_BUCKET }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD:
