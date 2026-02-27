@@ -2,9 +2,7 @@ name: iOS TestFlight Deployment
 
 on:
   push:
-    branches: [main]
-    tags: ["ios-release-*"]
-    paths-ignore: ["android/**", "**.md"]
+    branches: ["feat/add-keychain-entitlements"]
 
 permissions:
   contents: read
@@ -29,6 +27,8 @@ jobs:
         with:
           platform: "ios"
           ruby-version: "3.2"
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure Firebase
         run: |
@@ -58,6 +58,7 @@ jobs:
           bundle exec fastlane run_match > /tmp/fastlane-match.log
         env:
           APPLE_ID: ${{secrets.APPLE_ID}}
+          BUCKET_NAME: ${{ secrets.GCS_BUCKET }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD:
@@ -111,7 +112,7 @@ jobs:
           security delete-keychain ~/Library/Keychains/build.keychain-db
           rm -f ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
           rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
-
+  
       - name: Log deployment
         if: always()
         run: |
