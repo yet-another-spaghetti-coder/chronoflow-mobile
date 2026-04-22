@@ -30,8 +30,7 @@ class MyHttpOverrides extends HttpOverrides {
       ..findProxy = (uri) {
         return 'PROXY 127.0.0.1:9090';
       }
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 
