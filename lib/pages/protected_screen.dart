@@ -62,7 +62,7 @@ class _ProtectedEventsScreenState extends ConsumerState<ProtectedEventsScreen> {
           _isLoading = false;
         });
       }
-    } catch (_) {
+    } on Exception {
       if (mounted) {
         setState(() {
           _errorMessage = 'Failed to retrieve events.';
@@ -128,7 +128,7 @@ class _ProtectedEventsScreenState extends ConsumerState<ProtectedEventsScreen> {
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            Future<void> pickDateTime(bool isStart) async {
+            Future<void> pickDateTime({required bool isStart}) async {
               final now = DateTime.now();
               final initial = (isStart ? startAt : endAt) ?? now;
               final date = await showDatePicker(
@@ -137,12 +137,12 @@ class _ProtectedEventsScreenState extends ConsumerState<ProtectedEventsScreen> {
                 firstDate: DateTime(now.year - 1),
                 lastDate: DateTime(now.year + 5),
               );
-              if (date == null) return;
+              if (!context.mounted || date == null) return;
               final time = await showTimePicker(
                 context: context,
                 initialTime: TimeOfDay.fromDateTime(initial),
               );
-              if (time == null) return;
+              if (!context.mounted || time == null) return;
               final selected = DateTime(
                 date.year,
                 date.month,
@@ -197,14 +197,14 @@ class _ProtectedEventsScreenState extends ConsumerState<ProtectedEventsScreen> {
                       title: const Text('Start Time *'),
                       subtitle: Text(fmt(startAt)),
                       trailing: const Icon(Icons.calendar_today),
-                      onTap: () => pickDateTime(true),
+                      onTap: () => pickDateTime(isStart: true),
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text('End Time *'),
                       subtitle: Text(fmt(endAt)),
                       trailing: const Icon(Icons.calendar_today),
-                      onTap: () => pickDateTime(false),
+                      onTap: () => pickDateTime(isStart: false),
                     ),
                   ],
                 ),
@@ -294,7 +294,7 @@ class _ProtectedEventsScreenState extends ConsumerState<ProtectedEventsScreen> {
           SnackBar(content: Text(msg)),
         );
       }
-    } catch (_) {
+    } on Exception catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to create event.')),

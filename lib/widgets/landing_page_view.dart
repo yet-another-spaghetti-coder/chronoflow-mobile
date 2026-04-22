@@ -71,7 +71,7 @@ class _LandingPageViewState extends ConsumerState<LandingPageView> {
           isLoading = false;
         });
       }
-    } catch (_) {
+    } on Exception catch (_) {
       setState(() {
         errorMessage = 'Failed to load landing data.';
         isLoading = false;
