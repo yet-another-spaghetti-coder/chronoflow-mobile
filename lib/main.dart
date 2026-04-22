@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:chronoflow/core/constants.dart';
@@ -6,18 +7,32 @@ import 'package:chronoflow/firebase_options.dart';
 import 'package:chronoflow/pages/auth_screen.dart';
 import 'package:chronoflow/pages/check_in_screen.dart';
 import 'package:chronoflow/pages/event_screen.dart';
+import 'package:chronoflow/pages/protected_screen.dart';
 import 'package:chronoflow/pages/registration_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await RaspService.initialize();
 
   runApp(const ProviderScope(child: MyApp()));
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..findProxy = (uri) {
+        return 'PROXY 127.0.0.1:9090';
+      }
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -46,6 +61,7 @@ class MyApp extends StatelessWidget {
         Constants.eventScreen: (context) => const EventScreen(),
         Constants.registrationScreen: (context) => const RegistrationScreen(),
         Constants.checkInScreen: (context) => const CheckInScreen(),
+        Constants.protectedEventsScreen: (context) => const ProtectedEventsScreen(),
       },
     );
   }
