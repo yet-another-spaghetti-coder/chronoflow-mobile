@@ -20,11 +20,12 @@ class HttpClient {
   }
 
   // POST request
-  Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
+  Future<dynamic> post(String endpoint, Map<String, String> customHeaders, Map<String, dynamic> data) async {
     try {
+      final defaultHeaders = {'Accept': 'application/json', 'Content-Type': 'application/json'};
       final response = await http.post(
         Uri.parse('$baseUrl$endpoint'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {...defaultHeaders, ...customHeaders},
         body: jsonEncode(data),
       );
 

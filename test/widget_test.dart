@@ -107,10 +107,10 @@ void main() {
       }
     });
 
-    testWidgets('finds exactly 2 list tiles', (tester) async {
+    testWidgets('finds exactly 4 list tiles', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      expect(find.byType(ListTile), findsNWidgets(2));
+      expect(find.byType(ListTile), findsNWidgets(4));
     });
   });
 }
