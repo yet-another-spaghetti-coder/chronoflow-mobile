@@ -99,6 +99,8 @@ class AuthService {
       await _googleSignIn.disconnect();
       await _auth.signOut();
       await _storageService.deleteToken();
+      await _storageService.deleteRefreshCookie();
+      await _storageService.deleteAuthorizationCookie();
       return AuthState();
     } on Exception catch (e) {
       debugPrint('Error during sign out: $e');
