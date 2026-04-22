@@ -6,6 +6,7 @@ import 'package:chronoflow/firebase_options.dart';
 import 'package:chronoflow/pages/auth_screen.dart';
 import 'package:chronoflow/pages/check_in_screen.dart';
 import 'package:chronoflow/pages/event_screen.dart';
+import 'package:chronoflow/pages/protected_screen.dart';
 import 'package:chronoflow/pages/registration_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         Constants.eventScreen: (context) => const EventScreen(),
         Constants.registrationScreen: (context) => const RegistrationScreen(),
         Constants.checkInScreen: (context) => const CheckInScreen(),
+        Constants.protectedEventsScreen: (context) => const ProtectedEventsScreen(),
       },
     );
   }
