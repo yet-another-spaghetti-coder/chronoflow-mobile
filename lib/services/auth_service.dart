@@ -9,49 +9,53 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SecureStorageService _storageService;
   final HttpClient client = HttpClient();
+
+  bool _isInitialized = false;
+
   AuthService(this._storageService);
+
+  Future<void> _ensureInitialized() async {
+    if (!_isInitialized) {
+      await _googleSignIn.initialize(
+        serverClientId: '521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com',
+      );
+      _isInitialized = true;
+    }
+  }
+
   Future<bool> isLoggedIn() async {
     final user = _auth.currentUser;
     return user != null;
   }
 
   Future<AuthState> signInWithGoogle() async {
-    // Implement Google Sign-In logic here
-    // This is a placeholder for the actual implementation
     try {
-      // Simulate a successful sign-in
+      await _ensureInitialized();
       UserCredential? userCredentials;
+
       if (kIsWeb) {
         final googleProvider = GoogleAuthProvider();
         userCredentials = await _auth.signInWithPopup(googleProvider);
       } else {
-        // Trigger the authentication flow
-        final googleUser = await GoogleSignIn.instance.authenticate();
-
-        // Obtain the auth details from the request
+        final googleUser = await _googleSignIn.authenticate();
         final googleAuth = googleUser.authentication;
 
-        // Create a new credential
         final credential = GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
         );
-        // Once signed in, return the UserCredentia
-        userCredentials = await FirebaseAuth.instance.signInWithCredential(
-          credential,
-        );
-        if (userCredentials.credential?.accessToken != null) {
-          await _storageService.saveToken(
-            userCredentials.credential!.accessToken!,
-          );
-        }
+        userCredentials = await _auth.signInWithCredential(credential);
       }
-      if (userCredentials.user != null) {
+
+      final token = await userCredentials.user?.getIdToken();
+      if (token != null) {
+        await _storageService.saveToken(token);
         return AuthState(isLoggedIn: true);
       } else {
-        return AuthState(errorMessage: 'Google Sign-In failed');
+        return AuthState(errorMessage: 'Failed to retrieve Firebase ID Token');
       }
     } on Exception catch (e) {
       debugPrint('Error during Google Sign-In: $e');
@@ -60,32 +64,39 @@ class AuthService {
   }
 
   Future<AuthState> signUp(OrganiserRegistration orgReg) async {
-    final googleUser = await GoogleSignIn.instance.authenticate();
+    try {
+      await _ensureInitialized();
 
-    // Obtain the auth details from the request
-    final googleAuth = googleUser.authentication;
+      final googleUser = await _googleSignIn.authenticate();
+      final googleAuth = googleUser.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      idToken: googleAuth.idToken,
-    );
-    // Once signed in, return the UserCredentia
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(
-      credential,
-    );
-    if (userCredential.credential?.accessToken != null) {
-      final formPayload = orgReg.toJson();
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
 
-      await client.post(Constants.registerOrganizerEndpoint, {}, {
-        'jwtToken': userCredential.credential!.accessToken,
-        ...formPayload,
-      });
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      final token = await userCredential.user?.getIdToken();
+
+      if (token != null) {
+        final formPayload = orgReg.toJson();
+
+        await client.post(Constants.registerOrganizerEndpoint, {}, {
+          'jwtToken': token,
+          ...formPayload,
+        });
+      }
+      return signOut();
+    } on Exception catch (e) {
+      debugPrint('Error during Google Sign-Up: $e');
+      return AuthState(errorMessage: e.toString());
     }
-    return signOut();
   }
 
   Future<AuthState> signOut() async {
     try {
+      await _ensureInitialized();
+      await _googleSignIn.disconnect();
       await _auth.signOut();
       await _storageService.deleteToken();
       return AuthState();

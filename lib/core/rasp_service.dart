@@ -9,10 +9,20 @@ class RaspService {
       watcherMail: Constants.raspWatcherEmail,
       killOnBypass: true,
     );
+
     final iosConfig = TalsecConfig(
       iosConfig: IOSConfig(
         bundleIds: ['edu.nus.u.chronoflow'],
         teamId: '2U93L9FLAY',
+      ),
+      watcherMail: Constants.raspWatcherEmail,
+      killOnBypass: true,
+    );
+
+    final androidConfig = TalsecConfig(
+      androidConfig: AndroidConfig(
+        packageName: 'edu.nus.u.chronoflow',
+        signingCertHashes: ['KD4vChPX66/XFWVM2D0fdbeg0VWsXfG6+bDxHj4iEcU='],
       ),
       watcherMail: Constants.raspWatcherEmail,
       killOnBypass: true,
@@ -44,10 +54,13 @@ class RaspService {
     );
 
     await Talsec.instance.attachListener(callback);
-    if (Platform.isIOS) {
-      await Talsec.instance.start(iosConfig);
-    } else {
-      await Talsec.instance.start(defaultConfig);
+    switch (Platform.operatingSystem) {
+      case 'ios':
+        await Talsec.instance.start(iosConfig);
+      case 'android':
+        await Talsec.instance.start(androidConfig);
+      default:
+        await Talsec.instance.start(defaultConfig);
     }
   }
 

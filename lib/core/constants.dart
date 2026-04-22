@@ -9,9 +9,9 @@ class Constants {
   static const String placeholderImage = 'assets/images/default.jpg';
   static String sidebarTitle = 'ChronoFlow Menu';
   static String registrationFormTitle = 'Register as Organizer';
-  static String chronoflowFrontend = 'http://localhost:5173';
-  static String chronoflowDomain = 'localhost';
-  static String chronoflowBackend = 'http://localhost:8080';
+  static String chronoflowFrontend = 'https://chronoflow.site';
+  static String chronoflowDomain = 'chronoflow.site';
+  static String chronoflowBackend = 'https://api.chronoflow.site';
   static String registerOrganizerEndpoint = '/users/reg/sso-organizer';
   static String tokenExchangeEndpoint = '/users/auth/exchangeToken';
 
