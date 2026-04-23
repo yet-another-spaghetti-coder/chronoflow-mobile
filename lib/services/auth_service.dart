@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/models/api_response.dart';
 import 'package:chronoflow/models/organiser_registration.dart';
@@ -12,7 +14,7 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SecureStorageService _storageService;
-  final HttpClient client = HttpClient();
+  final HttpClient _client = HttpClient();
 
   bool _isInitialized = false;
 
@@ -51,7 +53,20 @@ class AuthService {
       }
 
       final token = await userCredentials.user?.getIdToken();
+
       if (token != null) {
+        try {
+          final result =
+              await _client.post(Constants.firebaseLoginEndpoint, {
+                    'Authorization': 'Bearer $token',
+                  }, {})
+                  as Map<String, dynamic>;
+          final responseBody = ApiResponse.fromJson(result);
+          debugPrint('Firebase Login Response: ${responseBody.data.toString()}');
+        } on Exception catch (e) {
+          debugPrint('Error during token exchange: $e');
+        }
+
         await _storageService.saveToken(token);
         return AuthState(isLoggedIn: true);
       } else {
@@ -81,7 +96,7 @@ class AuthService {
       if (token != null) {
         final formPayload = orgReg.toJson();
 
-        await client.post(Constants.registerOrganizerEndpoint, {}, {
+        await _client.post(Constants.registerOrganizerEndpoint, {}, {
           'jwtToken': token,
           ...formPayload,
         });
@@ -113,7 +128,7 @@ class AuthService {
     final headers = {
       'Authorization': 'Bearer $jwtToken',
     };
-    final result = await client.post(Constants.tokenExchangeEndpoint, headers, {}) as Map<String, dynamic>;
+    final result = await _client.post(Constants.tokenExchangeEndpoint, headers, {}) as Map<String, dynamic>;
     final responseBody = ApiResponse.fromJson(result);
     return responseBody.data.toString();
   }

@@ -13,6 +13,7 @@ class Constants {
   static String chronoflowDomain = 'chronoflow.site';
   static String chronoflowBackend = 'https://api.chronoflow.site';
   static String registerOrganizerEndpoint = '/users/reg/sso-organizer';
+  static String firebaseLoginEndpoint = '/users/auth/firebase-login';
   static String tokenExchangeEndpoint = '/users/auth/exchangeToken';
   static String validateOttEndpoint = '/users/auth/validateOTT';
   static String protectedEventsScreen = '/protected-events';
