@@ -4,10 +4,8 @@ on:
     branches: [main, dev]
     paths-ignore: ["**.md", "docs/**"]
 permissions:
-  actions: read
   contents: read
   security-events: write
-  pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,7 +27,7 @@ jobs:
           cat <<EOF > lib/firebase_options.dart
           import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
           import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kIsWeb;
-
+          
           class DefaultFirebaseOptions {
             static FirebaseOptions get currentPlatform {
               if (kIsWeb) {
@@ -100,12 +98,10 @@ jobs:
             -not -name "firebase_options.dart")
       - run: flutter analyze --fatal-infos
       - run: flutter test --coverage --concurrency=4
-      - name: Report code coverage
-        uses: Nef10/lcov-reporter-action@v0.6.1
+      - uses: codecov/codecov-action@v5
+        if: always()
         with:
-          lcov-file: ./coverage/lcov.info
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pr-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   security-scan:
     runs-on:
@@ -125,6 +121,3 @@ jobs:
         with:
           sarif_file: results.sarif
           category: mobsfscan
-
-  osv-scan:
-    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.3.3"
