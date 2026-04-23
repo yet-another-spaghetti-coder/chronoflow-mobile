@@ -1,15 +1,14 @@
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/providers/auth_provider.dart';
+import 'package:chronoflow/providers/storage_provider.dart';
 import 'package:chronoflow/widgets/background_image.dart';
-import 'package:chronoflow/widgets/landing_page_view.dart';
 import 'package:chronoflow/widgets/sidebar.dart';
+import 'package:chronoflow/widgets/web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EventScreen extends ConsumerStatefulWidget {
-  final bool showBackground;
-
-  const EventScreen({super.key, this.showBackground = false});
+  const EventScreen({super.key});
   @override
   EventScreenState createState() => EventScreenState();
 }
@@ -23,8 +22,8 @@ class EventScreenState extends ConsumerState<EventScreen> {
     return Future.value();
   }
 
-  Future<String?> fetchOtt() {
-    return ref.read(authProvider.notifier).exchangeJwtForOtt();
+  Future<String?> fetchCookie() {
+    return ref.read(secureStorageServiceProvider).getToken();
   }
 
   @override
@@ -34,14 +33,12 @@ class EventScreenState extends ConsumerState<EventScreen> {
         if (constraints.maxWidth > 600) {
           return LandscapeScaffold(
             handleSignOut: handleSignOut,
-            fetchOtt: fetchOtt,
-            showBackground: widget.showBackground,
+            fetchCookie: fetchCookie,
           );
         } else {
           return PortraitScaffold(
             handleSignOut: handleSignOut,
-            fetchOtt: fetchOtt,
-            showBackground: widget.showBackground,
+            fetchCookie: fetchCookie,
           );
         }
       },
@@ -51,12 +48,10 @@ class EventScreenState extends ConsumerState<EventScreen> {
 
 class LandscapeScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
-  final Future<String?> Function() fetchOtt;
-  final bool showBackground;
+  final Future<String?> Function() fetchCookie;
   const LandscapeScaffold({
     required this.handleSignOut,
-    required this.fetchOtt,
-    required this.showBackground,
+    required this.fetchCookie,
     super.key,
   });
   @override
@@ -64,7 +59,7 @@ class LandscapeScaffold extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          if (showBackground) const BackgroundImage(),
+          const BackgroundImage(),
           Row(
             children: [
               MainDrawer(
@@ -72,8 +67,9 @@ class LandscapeScaffold extends StatelessWidget {
                 signOut: () => handleSignOut(context),
               ),
               Expanded(
-                child: LandingPageView(
-                  fetchOtt: fetchOtt,
+                child: WebViewWithLoading(
+                  url: Constants.chronoflowFrontend,
+                  fetchCookie: fetchCookie,
                 ),
               ),
             ],
@@ -86,12 +82,10 @@ class LandscapeScaffold extends StatelessWidget {
 
 class PortraitScaffold extends StatelessWidget {
   final Future<void> Function(BuildContext) handleSignOut;
-  final Future<String?> Function() fetchOtt;
-  final bool showBackground;
+  final Future<String?> Function() fetchCookie;
   const PortraitScaffold({
     required this.handleSignOut,
-    required this.fetchOtt,
-    required this.showBackground,
+    required this.fetchCookie,
     super.key,
   });
   @override
@@ -106,9 +100,10 @@ class PortraitScaffold extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          if (showBackground) const BackgroundImage(),
-          LandingPageView(
-            fetchOtt: fetchOtt,
+          const BackgroundImage(),
+          WebViewWithLoading(
+            url: Constants.chronoflowFrontend,
+            fetchCookie: fetchCookie,
           ),
         ],
       ),
