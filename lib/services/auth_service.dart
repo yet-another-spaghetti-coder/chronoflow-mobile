@@ -9,53 +9,49 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SecureStorageService _storageService;
   final HttpClient client = HttpClient();
-
-  bool _isInitialized = false;
-
   AuthService(this._storageService);
-
-  Future<void> _ensureInitialized() async {
-    if (!_isInitialized) {
-      await _googleSignIn.initialize(
-        serverClientId: '521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com',
-      );
-      _isInitialized = true;
-    }
-  }
-
   Future<bool> isLoggedIn() async {
     final user = _auth.currentUser;
     return user != null;
   }
 
   Future<AuthState> signInWithGoogle() async {
+    // Implement Google Sign-In logic here
+    // This is a placeholder for the actual implementation
     try {
-      await _ensureInitialized();
+      // Simulate a successful sign-in
       UserCredential? userCredentials;
-
       if (kIsWeb) {
         final googleProvider = GoogleAuthProvider();
         userCredentials = await _auth.signInWithPopup(googleProvider);
       } else {
-        final googleUser = await _googleSignIn.authenticate();
+        // Trigger the authentication flow
+        final googleUser = await GoogleSignIn.instance.authenticate();
+
+        // Obtain the auth details from the request
         final googleAuth = googleUser.authentication;
 
+        // Create a new credential
         final credential = GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
         );
-        userCredentials = await _auth.signInWithCredential(credential);
+        // Once signed in, return the UserCredentia
+        userCredentials = await FirebaseAuth.instance.signInWithCredential(
+          credential,
+        );
+        if (userCredentials.credential?.accessToken != null) {
+          await _storageService.saveToken(
+            userCredentials.credential!.accessToken!,
+          );
+        }
       }
-
-      final token = await userCredentials.user?.getIdToken();
-      if (token != null) {
-        await _storageService.saveToken(token);
+      if (userCredentials.user != null) {
         return AuthState(isLoggedIn: true);
       } else {
-        return AuthState(errorMessage: 'Failed to retrieve Firebase ID Token');
+        return AuthState(errorMessage: 'Google Sign-In failed');
       }
     } on Exception catch (e) {
       debugPrint('Error during Google Sign-In: $e');
@@ -64,39 +60,32 @@ class AuthService {
   }
 
   Future<AuthState> signUp(OrganiserRegistration orgReg) async {
-    try {
-      await _ensureInitialized();
+    final googleUser = await GoogleSignIn.instance.authenticate();
 
-      final googleUser = await _googleSignIn.authenticate();
-      final googleAuth = googleUser.authentication;
+    // Obtain the auth details from the request
+    final googleAuth = googleUser.authentication;
 
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
+    // Once signed in, return the UserCredentia
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(
+      credential,
+    );
+    if (userCredential.credential?.accessToken != null) {
+      final formPayload = orgReg.toJson();
 
-      final userCredential = await _auth.signInWithCredential(credential);
-
-      final token = await userCredential.user?.getIdToken();
-
-      if (token != null) {
-        final formPayload = orgReg.toJson();
-
-        await client.post(Constants.registerOrganizerEndpoint, {}, {
-          'jwtToken': token,
-          ...formPayload,
-        });
-      }
-      return signOut();
-    } on Exception catch (e) {
-      debugPrint('Error during Google Sign-Up: $e');
-      return AuthState(errorMessage: e.toString());
+      await client.post(Constants.registerOrganizerEndpoint, {}, {
+        'jwtToken': userCredential.credential!.accessToken,
+        ...formPayload,
+      });
     }
+    return signOut();
   }
 
   Future<AuthState> signOut() async {
     try {
-      await _ensureInitialized();
-      await _googleSignIn.disconnect();
       await _auth.signOut();
       await _storageService.deleteToken();
       await _storageService.deleteRefreshCookie();
