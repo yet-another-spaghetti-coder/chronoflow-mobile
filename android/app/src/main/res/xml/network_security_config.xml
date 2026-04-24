@@ -7,7 +7,7 @@
         <!-- Generate with: openssl s_client -connect api.chronoflow.site:443 | openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64 -->
         <pin-set>
             <!-- Primary certificate pin -->
-            <pin digest="SHA-256">QjwkR0/OSehYgg+/6/y8X7soOxfnLtKU/EyDpZ3Ml5Q=</pin>
+            <pin digest="SHA-256">QjwkR0/OSehYgg+/6/y8X7soOxfnLtKU/EyDpZ3Ml5Qt=</pin>
             <!-- Backup certificate pin (optional but recommended) -->
             <!-- <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin> -->
         </pin-set>

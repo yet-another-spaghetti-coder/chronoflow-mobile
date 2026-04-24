@@ -616,21 +616,6 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
             'View and manage all events within your organisation. You can create new events, update details, track participants, and monitor progress — all in one place.',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: FilledButton.icon(
-              onPressed: _isCreating ? null : _createEvent,
-              icon: _isCreating
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Icon(Icons.add),
-              label: const Text('Create Event'),
-            ),
-          ),
         ],
       ),
     );
@@ -657,7 +642,10 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -675,7 +663,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                     ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 TextButton.icon(
                   onPressed: _isUpdating ? null : () => _editEvent(event),
                   icon: _isUpdating
@@ -710,12 +698,12 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
             _buildInfoRow(Icons.calendar_today, 'Start', startTime),
             _buildInfoRow(Icons.calendar_today, 'End', endTime),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 _buildStatChip(Icons.group, 'Groups', groupCount.toString()),
-                const SizedBox(width: 8),
                 _buildStatChip(Icons.people, 'Participants', participants.toString()),
-                const SizedBox(width: 8),
                 _buildStatChip(Icons.task_alt, 'Tasks', '$completedTasks/$totalTasks'),
               ],
             ),
@@ -729,6 +717,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 16, color: Colors.grey),
           const SizedBox(width: 8),
@@ -736,7 +725,14 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
             '$label: ',
             style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
           ),
-          Text(value, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
         ],
       ),
     );
