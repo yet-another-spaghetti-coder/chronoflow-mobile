@@ -235,5 +235,4 @@ class PinnedHttpClient {
       throw Exception('Failed to delete data: $e');
     }
   }
-
 }
