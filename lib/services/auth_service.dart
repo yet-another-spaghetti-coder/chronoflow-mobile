@@ -12,7 +12,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SecureStorageService _storageService;
   final HttpClient _client = HttpClient();
@@ -20,37 +19,40 @@ class AuthService {
   bool _isInitialized = false;
 
   AuthService(this._storageService);
-
-  Future<void> _ensureInitialized() async {
-    if (!_isInitialized) {
-      await _googleSignIn.initialize(
-        serverClientId: '521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com',
-      );
-      _isInitialized = true;
-    }
-  }
-
   Future<bool> isLoggedIn() async {
     final user = _auth.currentUser;
     return user != null;
   }
 
   Future<AuthState> signInWithGoogle() async {
+    // Implement Google Sign-In logic here
+    // This is a placeholder for the actual implementation
     try {
-      await _ensureInitialized();
+      // Simulate a successful sign-in
       UserCredential? userCredentials;
-
       if (kIsWeb) {
         final googleProvider = GoogleAuthProvider();
         userCredentials = await _auth.signInWithPopup(googleProvider);
       } else {
-        final googleUser = await _googleSignIn.authenticate();
+        // Trigger the authentication flow
+        final googleUser = await GoogleSignIn.instance.authenticate();
+
+        // Obtain the auth details from the request
         final googleAuth = googleUser.authentication;
 
+        // Create a new credential
         final credential = GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
         );
-        userCredentials = await _auth.signInWithCredential(credential);
+        // Once signed in, return the UserCredentia
+        userCredentials = await FirebaseAuth.instance.signInWithCredential(
+          credential,
+        );
+        if (userCredentials.credential?.accessToken != null) {
+          await _storageService.saveToken(
+            userCredentials.credential!.accessToken!,
+          );
+        }
       }
 
       final token = await userCredentials.user?.getIdToken();
@@ -96,7 +98,7 @@ class AuthService {
         await _storageService.saveToken(token);
         return AuthState(isLoggedIn: true);
       } else {
-        return AuthState(errorMessage: 'Failed to retrieve Firebase ID Token');
+        return AuthState(errorMessage: 'Google Sign-In failed');
       }
     } on Exception catch (e) {
       debugPrint('Error during Google Sign-In: $e');
@@ -132,12 +134,11 @@ class AuthService {
       debugPrint('Error during Google Sign-Up: $e');
       return AuthState(errorMessage: e.toString());
     }
+    return signOut();
   }
 
   Future<AuthState> signOut() async {
     try {
-      await _ensureInitialized();
-      await _googleSignIn.disconnect();
       await _auth.signOut();
       await _storageService.deleteToken();
       await _storageService.deleteRefreshCookie();
