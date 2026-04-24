@@ -59,11 +59,15 @@ runs:
         key: ios-pods-${{ hashFiles('ios/Podfile.lock') }}
         restore-keys: |
           ios-pods-
-
+    - name: Get dependencies
+      shell: bash
+      run: flutter pub get --enforce-lockfile
     # 6. Install Tools
     - name: Install Firebase Tools
       shell: bash
       run: npm install -g firebase-tools
+
+
 
     - name: Install FlutterFire CLI
       shell: bash
@@ -71,9 +75,6 @@ runs:
         flutter pub global activate flutterfire_cli
         echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
 
-    - name: Get dependencies
-      shell: bash
-      run: flutter pub get --enforce-lockfile
 
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
