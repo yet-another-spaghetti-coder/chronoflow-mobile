@@ -16,8 +16,6 @@ class AuthService {
   final SecureStorageService _storageService;
   final HttpClient _client = HttpClient();
 
-  bool _isInitialized = false;
-
   AuthService(this._storageService);
   Future<bool> isLoggedIn() async {
     final user = _auth.currentUser;
@@ -108,9 +106,7 @@ class AuthService {
 
   Future<AuthState> signUp(OrganiserRegistration orgReg) async {
     try {
-      await _ensureInitialized();
-
-      final googleUser = await _googleSignIn.authenticate();
+      final googleUser = await GoogleSignIn.instance.authenticate();
       final googleAuth = googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
@@ -134,7 +130,6 @@ class AuthService {
       debugPrint('Error during Google Sign-Up: $e');
       return AuthState(errorMessage: e.toString());
     }
-    return signOut();
   }
 
   Future<AuthState> signOut() async {
