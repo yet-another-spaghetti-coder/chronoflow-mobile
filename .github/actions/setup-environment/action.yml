@@ -42,18 +42,13 @@ runs:
         cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
 
     # 4. Cache Pub Dependencies
-    - name: Cache Pub Dependencies
+    - name: Cache Pub dependencies
       uses: actions/cache@v5
       with:
-        path: |
-          ~/.pub-cache
-          **/.packages
-          **/.flutter-plugins
-          **/.flutter-plugins-dependencies
-          **/.dart_tool/package_config.json
-        key: build-pub-${{ hashFiles('**/pubspec.lock') }}
+        path: ~/.pub-cache
+        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
         restore-keys: |
-          build-pub-
+          ${{ runner.os }}-pub-
 
     # 5. Cache CocoaPods
     - name: Cache CocoaPods
