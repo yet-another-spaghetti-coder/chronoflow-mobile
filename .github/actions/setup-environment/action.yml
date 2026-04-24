@@ -41,11 +41,11 @@ runs:
         cache: false
 
     #4. Cache Pub Dependencies
-    # - name: Cache Pub dependencies
-    #   uses: actions/cache@v5
-    #   with:
-    #     path: ~/.pub-cache
-    #     key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+    - name: Cache Pub dependencies
+      uses: actions/cache@v5
+      with:
+        path: ~/.pub-cache
+        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
 
     # 5. Cache CocoaPods
     - name: Cache CocoaPods
@@ -57,7 +57,7 @@ runs:
 
     - name: Get dependencies
       shell: bash
-      run: flutter pub get --enforce-lockfile
+      run: flutter pub get
     # 6. Install Tools
     - name: Install Firebase Tools
       shell: bash
