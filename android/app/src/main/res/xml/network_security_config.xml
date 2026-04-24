@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Certificate pinning for production domains -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">chronoflow.site</domain>
+        <!-- TODO: Replace with your actual certificate SHA-256 hashes -->
+        <!-- Generate with: openssl s_client -connect api.chronoflow.site:443 | openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64 -->
+        <pin-set>
+            <!-- Primary certificate pin -->
+            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <!-- Backup certificate pin (optional but recommended) -->
+            <!-- <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin> -->
+        </pin-set>
+    </domain-config>
+    
+    <!-- Development only: allow cleartext for localhost -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
     </domain-config>
 </network-security-config>
