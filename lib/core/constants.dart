@@ -9,7 +9,6 @@ class Constants {
   static String sidebarTitle = 'ChronoFlow Menu';
   static String registrationFormTitle = 'Register as Organizer';
   static String chronoflowFrontend = 'https://chronoflow.site';
-  static String chronoflowDomain = 'chronoflow.site';
   static String chronoflowBackend = 'https://api.chronoflow.site';
   static String registerOrganizerEndpoint = '/users/reg/sso-organizer';
   static String firebaseLoginEndpoint = '/users/auth/firebase-login';

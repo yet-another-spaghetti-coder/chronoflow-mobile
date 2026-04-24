@@ -9,7 +9,6 @@ class RaspService {
       watcherMail: Constants.raspWatcherEmail,
       killOnBypass: true,
     );
-
     final iosConfig = TalsecConfig(
       iosConfig: IOSConfig(
         bundleIds: ['edu.nus.u.chronoflow'],
