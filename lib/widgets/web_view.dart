@@ -29,6 +29,7 @@ class _WebViewWithLoadingState extends State<WebViewWithLoading> {
   Future<void> _initializeWebView() async {
     // Set up the cookie first
     final cookie = await widget.fetchCookie();
+    debugPrint('Cookie: $cookie');
     if (cookie != null) {
       final authCookie = WebViewCookie(
         name: 'token',

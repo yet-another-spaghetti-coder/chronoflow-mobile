@@ -1,4 +1,4 @@
-package edu.nus.u.chronoflow
+package edu.nus.u.chronoflowapp
 
 import android.os.Bundle
 import android.view.WindowManager

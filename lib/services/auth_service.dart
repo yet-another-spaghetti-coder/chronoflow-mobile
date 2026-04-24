@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/models/api_response.dart';
@@ -9,6 +9,7 @@ import 'package:chronoflow/states/auth_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
@@ -56,13 +57,38 @@ class AuthService {
 
       if (token != null) {
         try {
-          final result =
-              await _client.post(Constants.firebaseLoginEndpoint, {
-                    'Authorization': 'Bearer $token',
-                  }, {})
-                  as Map<String, dynamic>;
-          final responseBody = ApiResponse.fromJson(result);
-          debugPrint('Firebase Login Response: ${responseBody.data.toString()}');
+          // Use raw http to access response headers (cookies)
+          final response = await http.post(
+            Uri.parse('${Constants.chronoflowBackend}${Constants.firebaseLoginEndpoint}'),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode({}),
+          );
+
+          if (response.statusCode == 200) {
+            final result = jsonDecode(response.body) as Map<String, dynamic>;
+            final responseBody = ApiResponse.fromJson(result);
+            debugPrint('Firebase Login Response: ${responseBody.data}');
+
+            // Extract and store cookies from response
+            final setCookie = response.headers['set-cookie'];
+            if (setCookie != null && setCookie.isNotEmpty) {
+              final refreshToken = _extractCookieValue(setCookie, 'refreshToken');
+              final authorization = _extractCookieValue(setCookie, 'Authorization');
+
+              if (refreshToken != null && refreshToken.isNotEmpty) {
+                await _storageService.saveRefreshCookie('refreshToken=$refreshToken');
+              }
+              if (authorization != null && authorization.isNotEmpty) {
+                await _storageService.saveAuthorizationCookie('Authorization=$authorization');
+              }
+            }
+          } else {
+            debugPrint('Firebase Login HTTP error: ${response.statusCode}');
+          }
         } on Exception catch (e) {
           debugPrint('Error during token exchange: $e');
         }
@@ -135,5 +161,10 @@ class AuthService {
 
   User? getCurrentUser() {
     return _auth.currentUser;
+  }
+
+  String? _extractCookieValue(String rawSetCookie, String cookieName) {
+    final match = RegExp('${RegExp.escape(cookieName)}=([^;]+)').firstMatch(rawSetCookie);
+    return match?.group(1)?.trim();
   }
 }

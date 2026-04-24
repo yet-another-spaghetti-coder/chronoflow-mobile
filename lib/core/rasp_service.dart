@@ -21,8 +21,11 @@ class RaspService {
 
     final androidConfig = TalsecConfig(
       androidConfig: AndroidConfig(
-        packageName: 'edu.nus.u.chronoflow',
-        signingCertHashes: ['KD4vChPX66/XFWVM2D0fdbeg0VWsXfG6+bDxHj4iEcU='],
+        packageName: 'edu.nus.u.chronoflowapp',
+        signingCertHashes: [
+          'Xxj7vK9z4BGhBkWreKFeo1DX3QkDy+OFA/mBA899+iw=',
+          'Ayy7g1lxfpD3LTncpCWpLi5w4ayxo5zsEk/vD4WwzeE=',
+        ],
       ),
       watcherMail: Constants.raspWatcherEmail,
       killOnBypass: true,

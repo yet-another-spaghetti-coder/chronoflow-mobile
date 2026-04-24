@@ -15,14 +15,9 @@ class MainDrawer extends StatelessWidget {
         children: [
           buildDrawerHeader(),
           buildListTile(
-            icon: Icons.home,
-            text: 'HOME',
-            onTap: () => Navigator.pushReplacementNamed(context, Constants.eventScreen),
-          ),
-          buildListTile(
             icon: Icons.event,
-            text: 'MY EVENTS',
-            onTap: () => Navigator.pushReplacementNamed(context, Constants.protectedEventsScreen),
+            text: 'EVENTS',
+            onTap: () => Navigator.pushReplacementNamed(context, Constants.eventsScreen),
           ),
           buildListTile(
             icon: Icons.qr_code_scanner,

@@ -1,6 +1,5 @@
 class Constants {
   static const String authScreen = './auth';
-  static const String eventScreen = './event';
   static const String registrationScreen = './registration';
   static const String checkInScreen = './check-in';
   static const String appTitle = 'ChronoFlow';
@@ -14,8 +13,10 @@ class Constants {
   static String chronoflowBackend = 'https://api.chronoflow.site';
   static String registerOrganizerEndpoint = '/users/reg/sso-organizer';
   static String firebaseLoginEndpoint = '/users/auth/firebase-login';
+  static String firebaseTokenExchangeEndpoint = '/users/auth/exchangeFirebaseToken';
   static String tokenExchangeEndpoint = '/users/auth/exchangeToken';
   static String validateOttEndpoint = '/users/auth/validateOTT';
   static String protectedEventsScreen = '/protected-events';
+  static String eventsScreen = '/events';
   static String raspWatcherEmail = 'chronoflow2025@gmail.com';
 }

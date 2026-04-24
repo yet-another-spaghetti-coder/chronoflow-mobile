@@ -19,8 +19,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "edu.nus.u.chronoflow"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "edu.nus.u.chronoflowapp"
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "edu.nus.u.chronoflow"
+        applicationId = "edu.nus.u.chronoflowapp"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
