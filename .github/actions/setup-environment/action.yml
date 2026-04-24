@@ -39,7 +39,7 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
         channel: "stable"
         cache: true
-        cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+        cache-key: "flutter-:os:-:channel:-:version:-:arch:-${{ hashFiles('**/pubspec.lock') }}"
 
     # 4. Cache Pub Dependencies
     # - name: Cache Pub dependencies
