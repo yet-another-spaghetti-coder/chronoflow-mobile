@@ -601,7 +601,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     }
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width > 600;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -616,21 +617,23 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
             'View and manage all events within your organisation. You can create new events, update details, track participants, and monitor progress — all in one place.',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: FilledButton.icon(
-              onPressed: _isCreating ? null : _createEvent,
-              icon: _isCreating
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Icon(Icons.add),
-              label: const Text('Create Event'),
+          if (isWide) ...[
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: _isCreating ? null : _createEvent,
+                icon: _isCreating
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.add),
+                label: const Text('Create Event'),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -820,7 +823,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
           if (index == 0) {
             return Column(
               children: [
-                _buildHeader(),
+                _buildHeader(context),
                 _buildEventCard(_events[index]),
               ],
             );
