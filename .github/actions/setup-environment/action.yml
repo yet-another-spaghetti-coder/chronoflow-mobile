@@ -47,8 +47,6 @@ runs:
       with:
         path: ~/.pub-cache
         key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-pub-
 
     # 5. Cache CocoaPods
     - name: Cache CocoaPods
