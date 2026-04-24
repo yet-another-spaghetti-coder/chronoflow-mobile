@@ -53,7 +53,12 @@ jobs:
       - name: Setup Keychain
         run: |
           security create-keychain -p "" build.keychain
+          security unlock-keychain -p "" build.keychain
+          
+          security set-keychain-settings -t 3600 -u build.keychain
+          
           security default-keychain -s build.keychain
+          security list-keychains -d user -s build.keychain $(security list-keychains -d user | xargs)
 
       - name: Decode App Store Connect API Key
         run: |
@@ -73,7 +78,7 @@ jobs:
       - name: Sign and Export IPA
         working-directory: ios
         run: |
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$HOME/Library/Keychains/build.keychain-db"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
           # Complete silence, only show if it fails
           if ! bundle exec fastlane beta > /tmp/fastlane.log 2>&1; then
             echo "❌ Fastlane failed"
