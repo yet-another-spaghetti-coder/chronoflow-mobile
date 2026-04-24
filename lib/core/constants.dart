@@ -18,5 +18,7 @@ class Constants {
   static String validateOttEndpoint = '/users/auth/validateOTT';
   static String protectedEventsScreen = '/protected-events';
   static String eventsScreen = '/events';
+  static String aboutScreen = '/about';
+  static String aboutPageUrl = '/about';
   static String raspWatcherEmail = 'chronoflow2025@gmail.com';
 }
