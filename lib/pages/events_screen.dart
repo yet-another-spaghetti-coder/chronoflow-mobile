@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/providers/auth_provider.dart';
 import 'package:chronoflow/providers/storage_provider.dart';
+import 'package:chronoflow/services/pinned_http_client.dart';
 import 'package:chronoflow/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 
 class EventsScreen extends ConsumerStatefulWidget {
   const EventsScreen({super.key});
@@ -137,7 +137,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
         return;
       }
 
-      final response = await http.get(
+      final response = await PinnedHttpClient.get(
         Uri.parse('${Constants.chronoflowBackend}/events'),
         headers: {
           'Accept': 'application/json',
@@ -262,7 +262,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     });
 
     try {
-      final response = await http.post(
+      final response = await PinnedHttpClient.post(
         Uri.parse('${Constants.chronoflowBackend}/events'),
         headers: {
           'Accept': 'application/json',
@@ -329,7 +329,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     });
 
     try {
-      final response = await http.patch(
+      final response = await PinnedHttpClient.patch(
         Uri.parse('${Constants.chronoflowBackend}/events/$eventId'),
         headers: {
           'Accept': 'application/json',
@@ -416,7 +416,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
     });
 
     try {
-      final response = await http.delete(
+      final response = await PinnedHttpClient.delete(
         Uri.parse('${Constants.chronoflowBackend}/events/$eventId'),
         headers: {
           'Accept': 'application/json',
