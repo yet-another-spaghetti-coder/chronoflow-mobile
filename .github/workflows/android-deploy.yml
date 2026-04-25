@@ -28,6 +28,7 @@ jobs:
         with:
           platform: "android"
           ruby-version: "4.0.1"
+          flutter-version: "3.41.7"
 
       # 2. Configure Firebase
       - name: Configure Firebase
