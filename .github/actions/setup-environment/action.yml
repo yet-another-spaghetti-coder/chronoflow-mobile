@@ -67,10 +67,12 @@ runs:
 
     # 6. Install Tools
     - name: Install Firebase Tools
+      if: inputs.platform == 'ios'
       shell: bash
       run: npm install -g firebase-tools
 
     - name: Install FlutterFire CLI
+      if: inputs.platform == 'ios'
       shell: bash
       run: |
         flutter pub global activate flutterfire_cli

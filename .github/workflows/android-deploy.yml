@@ -5,7 +5,6 @@ on:
     branches: [android-release-test]
     # tags: ["android-release-*"]
     paths-ignore: ["ios/**", "**.md"]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,20 +27,14 @@ jobs:
         with:
           platform: "android"
           ruby-version: "4.0.1"
-          flutter-version: "3.41.7"
 
-      - name: Install FlutterFire CLI
+      # 2. Verify committed Firebase config
+      - name: Verify Firebase config
         run: |
-          dart pub global activate flutterfire_cli 1.3.2
-          echo "$PUB_CACHE/bin" >> $GITHUB_PATH
-
-      # 2. Configure Firebase
-      - name: Configure Firebase
-        run: |
-          flutterfire configure --token=${{ secrets.ANDROID_FIREBASE_TOKEN }} \
-            --project=${{ vars.FIREBASE_PROJECT_ID }} \
-            --platforms=android \
-            --yes
+          test -f lib/firebase_options.dart
+          test -f android/app/google-services.json
+          grep -q "projectId: 'chronoflow-1'" lib/firebase_options.dart
+          grep -q '"project_id": "chronoflow-1"' android/app/google-services.json
 
       # 3. Run Fastlane
       - name: Run Fastlane
