@@ -2,8 +2,7 @@ name: iOS TestFlight Deployment
 
 on:
   push:
-    branches: [fix/cd-pipeline]
-    #tags: ["ios-release-*"]
+    branches: [ios-release]
     paths-ignore: ["android/**", "**.md"]
 
 permissions:
