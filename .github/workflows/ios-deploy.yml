@@ -37,6 +37,10 @@ jobs:
       - name: Setup gcloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Select xcode version
+        run: |
+          xcodes select 26.2
+
       - name: Configure Firebase
         run: |
           BUNDLE_GEMFILE=ios/Gemfile bundle exec flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
