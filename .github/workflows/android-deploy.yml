@@ -31,7 +31,7 @@ jobs:
           flutter-version: "3.41.7"
 
       - name: Install FlutterFire CLI
-        run: dart pub global activate flutterfire_cli --force
+        run: dart pub global activate flutterfire_cli
 
       # 2. Configure Firebase
       - name: Configure Firebase
