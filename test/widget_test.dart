@@ -24,8 +24,8 @@ void main() {
           ),
         ),
         routes: {
-          Constants.protectedEventsScreen: (context) => const Scaffold(
-            body: Center(child: Text('Protected Events Screen')),
+          Constants.eventsScreen: (context) => const Scaffold(
+            body: Center(child: Text('Events Screen')),
           ),
         },
       );
@@ -48,10 +48,10 @@ void main() {
       expect(logo.size, equals(100));
     });
 
-    testWidgets('displays MY EVENTS list tile with correct icon and text', (tester) async {
+    testWidgets('displays EVENTS list tile with correct icon and text', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      expect(find.text('MY EVENTS'), findsOneWidget);
+      expect(find.text('EVENTS'), findsOneWidget);
       expect(find.byIcon(Icons.event), findsOneWidget);
     });
 
@@ -62,6 +62,13 @@ void main() {
       expect(find.byIcon(Icons.qr_code_scanner), findsOneWidget);
     });
 
+    testWidgets('displays ABOUT list tile with correct icon and text', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+
+      expect(find.text('ABOUT'), findsOneWidget);
+      expect(find.byIcon(Icons.info), findsOneWidget);
+    });
+
     testWidgets('displays LOGOUT list tile with correct icon and text', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
@@ -69,13 +76,13 @@ void main() {
       expect(find.byIcon(Icons.logout), findsOneWidget);
     });
 
-    testWidgets('navigates to protected events screen when MY EVENTS is tapped', (tester) async {
+    testWidgets('navigates to events screen when EVENTS is tapped', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      await tester.tap(find.text('MY EVENTS'));
+      await tester.tap(find.text('EVENTS'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Protected Events Screen'), findsOneWidget);
+      expect(find.text('Events Screen'), findsOneWidget);
     });
 
     testWidgets('calls signOut callback when LOGOUT is tapped', (tester) async {
@@ -114,10 +121,10 @@ void main() {
       }
     });
 
-    testWidgets('finds exactly 3 list tiles', (tester) async {
+    testWidgets('finds exactly 4 list tiles', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      expect(find.byType(ListTile), findsNWidgets(3));
+      expect(find.byType(ListTile), findsNWidgets(4));
     });
   });
 }
