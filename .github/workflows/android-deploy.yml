@@ -33,6 +33,7 @@ jobs:
       # 2. Configure Firebase
       - name: Configure Firebase
         run: |
+          dart pub global activate flutterfire_cli --force
           flutterfire configure --token=${{ secrets.FIREBASE_TOKEN }} \
             --project=${{ secrets.FIREBASE_PROJECT_ID }} \
             --platforms=android \
