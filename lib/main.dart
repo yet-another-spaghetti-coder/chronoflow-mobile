@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:chronoflow/core/constants.dart';
 import 'package:chronoflow/core/rasp_service.dart';
 import 'package:chronoflow/firebase_options.dart';
+import 'package:chronoflow/pages/about_screen.dart';
 import 'package:chronoflow/pages/auth_screen.dart';
 import 'package:chronoflow/pages/check_in_screen.dart';
-import 'package:chronoflow/pages/event_screen.dart';
+import 'package:chronoflow/pages/events_screen.dart';
 import 'package:chronoflow/pages/protected_screen.dart';
 import 'package:chronoflow/pages/registration_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -44,10 +45,11 @@ class MyApp extends StatelessWidget {
       initialRoute: Constants.authScreen,
       routes: {
         Constants.authScreen: (context) => const AuthScreen(),
-        Constants.eventScreen: (context) => const EventScreen(),
         Constants.registrationScreen: (context) => const RegistrationScreen(),
         Constants.checkInScreen: (context) => const CheckInScreen(),
         Constants.protectedEventsScreen: (context) => const ProtectedEventsScreen(),
+        Constants.eventsScreen: (context) => const EventsScreen(),
+        Constants.aboutScreen: (context) => const AboutScreen(),
       },
     );
   }

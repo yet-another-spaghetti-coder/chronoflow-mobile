@@ -24,8 +24,8 @@ void main() {
           ),
         ),
         routes: {
-          Constants.eventScreen: (context) => const Scaffold(
-            body: Center(child: Text('Event Screen')),
+          Constants.eventsScreen: (context) => const Scaffold(
+            body: Center(child: Text('Events Screen')),
           ),
         },
       );
@@ -48,11 +48,25 @@ void main() {
       expect(logo.size, equals(100));
     });
 
-    testWidgets('displays HOME list tile with correct icon and text', (tester) async {
+    testWidgets('displays EVENTS list tile with correct icon and text', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      expect(find.text('HOME'), findsOneWidget);
-      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.text('EVENTS'), findsOneWidget);
+      expect(find.byIcon(Icons.event), findsOneWidget);
+    });
+
+    testWidgets('displays CHECK IN list tile with correct icon and text', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+
+      expect(find.text('CHECK IN'), findsOneWidget);
+      expect(find.byIcon(Icons.qr_code_scanner), findsOneWidget);
+    });
+
+    testWidgets('displays ABOUT list tile with correct icon and text', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+
+      expect(find.text('ABOUT'), findsOneWidget);
+      expect(find.byIcon(Icons.info), findsOneWidget);
     });
 
     testWidgets('displays LOGOUT list tile with correct icon and text', (tester) async {
@@ -62,13 +76,13 @@ void main() {
       expect(find.byIcon(Icons.logout), findsOneWidget);
     });
 
-    testWidgets('navigates to event screen when HOME is tapped', (tester) async {
+    testWidgets('navigates to events screen when EVENTS is tapped', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      await tester.tap(find.text('HOME'));
+      await tester.tap(find.text('EVENTS'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Event Screen'), findsOneWidget);
+      expect(find.text('Events Screen'), findsOneWidget);
     });
 
     testWidgets('calls signOut callback when LOGOUT is tapped', (tester) async {

@@ -19,21 +19,50 @@ class CheckInService {
     }
   }
 
+  Future<String?> _getCookieHeader() async {
+    final refreshCookie = await _storageService.getRefreshCookie();
+    final authorizationCookie = await _storageService.getAuthorizationCookie();
+
+    final parts = <String>[];
+
+    if (refreshCookie != null && refreshCookie.isNotEmpty) {
+      if (refreshCookie.contains('=')) {
+        parts.add(refreshCookie);
+      } else {
+        parts.add('refreshToken=$refreshCookie');
+      }
+    }
+
+    if (authorizationCookie != null && authorizationCookie.isNotEmpty) {
+      if (authorizationCookie.contains('=')) {
+        parts.add(authorizationCookie);
+      } else {
+        parts.add('Authorization=$authorizationCookie');
+      }
+    }
+
+    if (parts.isNotEmpty) {
+      return parts.join('; ');
+    }
+
+    return null;
+  }
+
   Future<Either<String, String>> checkIn(String qrCode) async {
     final token = extractTokenFromUrl(qrCode);
     if (token == null || token.isEmpty) {
       return const Left('Invalid QR code format. No token found.');
     }
 
-    final jwtToken = await _storageService.getToken();
-    if (jwtToken == null || jwtToken.isEmpty) {
+    final cookieHeader = await _getCookieHeader();
+    if (cookieHeader == null || cookieHeader.isEmpty) {
       return const Left('Authentication required. Please log in again.');
     }
 
     try {
       await _httpClient.post(
         '/attendees/staff-scan',
-        {'Authorization': 'Bearer $jwtToken'},
+        {'Cookie': cookieHeader},
         {'token': token},
       );
       return const Right('Check-in successful');

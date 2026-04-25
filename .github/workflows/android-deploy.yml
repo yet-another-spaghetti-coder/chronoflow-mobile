@@ -2,9 +2,10 @@ name: Android Internal Deployment
 
 on:
   push:
-    branches: [main]
-    tags: ["android-release-*"]
+    branches: [android-release-test]
+    # tags: ["android-release-*"]
     paths-ignore: ["ios/**", "**.md"]
+  workflow_dispatch:
 
 permissions:
   contents: read

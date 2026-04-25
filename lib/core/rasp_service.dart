@@ -18,6 +18,18 @@ class RaspService {
       killOnBypass: true,
     );
 
+    final androidConfig = TalsecConfig(
+      androidConfig: AndroidConfig(
+        packageName: 'edu.nus.u.chronoflowapp',
+        signingCertHashes: [
+          'Xxj7vK9z4BGhBkWreKFeo1DX3QkDy+OFA/mBA899+iw=',
+          'Ayy7g1lxfpD3LTncpCWpLi5w4ayxo5zsEk/vD4WwzeE=',
+        ],
+      ),
+      watcherMail: Constants.raspWatcherEmail,
+      killOnBypass: true,
+    );
+
     final callback = ThreatCallback(
       onAppIntegrity: () => _handleThreat('App integrity'),
       onObfuscationIssues: () => _handleThreat('Obfuscation issues'),
@@ -44,10 +56,13 @@ class RaspService {
     );
 
     await Talsec.instance.attachListener(callback);
-    if (Platform.isIOS) {
-      await Talsec.instance.start(iosConfig);
-    } else {
-      await Talsec.instance.start(defaultConfig);
+    switch (Platform.operatingSystem) {
+      case 'ios':
+        await Talsec.instance.start(iosConfig);
+      case 'android':
+        await Talsec.instance.start(androidConfig);
+      default:
+        await Talsec.instance.start(defaultConfig);
     }
   }
 

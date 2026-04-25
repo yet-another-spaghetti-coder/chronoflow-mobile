@@ -33,7 +33,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.isLoggedIn) {
-        Navigator.pushReplacementNamed(context, Constants.eventScreen);
+        Navigator.pushReplacementNamed(context, Constants.protectedEventsScreen);
       } else if (next.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

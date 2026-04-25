@@ -20,8 +20,9 @@ platform :android do
       end
     end
 
-    # 2. Define a temporary path for the keystore (unique per run)
-    keystore_path = "/tmp/upload_keystore_#{Time.now.to_i}_#{rand(1_000_000)}.jks"
+    # 2. Define temporary paths
+    keystore_path = File.expand_path("/tmp/upload_keystore_#{Time.now.to_i}_#{rand(1_000_000)}.jks")
+    key_properties_path = File.expand_path("key.properties")
 
     begin
       # 3. Decode the Keystore
@@ -30,27 +31,31 @@ platform :android do
       end
       File.chmod(0600, keystore_path)
 
-      # 4. Build App Bundle (AAB)
-      gradle(
-        task: "clean bundleRelease",
-        properties: {
-          "android.injected.signing.store.file" => keystore_path,
-          "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
-          "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
-          "android.injected.signing.key.password" => ENV['KEY_PASSWORD']
-        }
+      # 4. Write a temporary key.properties file for Flutter's build.gradle
+      File.write(key_properties_path, <<~PROPS
+        storeFile=#{keystore_path}
+        storePassword=#{ENV['STORE_PASSWORD']}
+        keyAlias=#{ENV['KEY_ALIAS']}
+        keyPassword=#{ENV['KEY_PASSWORD']}
+      PROPS
       )
 
-      # 5. Upload to Play Store (Internal Track)
+      # 5. Execute Flutter CLI to build the App Bundle (AAB) with obfuscation
+      Dir.chdir("..") do
+        sh("flutter build appbundle --release --obfuscate --split-debug-info=./debug_info")
+      end
+
+      # 6. Upload to Play Store (Internal Track)
       upload_to_play_store(
         track: "internal",
         release_status: "draft",
         json_key_data: ENV['PLAY_STORE_SA_JSON'],
-        skip_upload_apk: true
+        aab: "../build/app/outputs/bundle/release/app-release.aab"
       )
     ensure
-      # 6. Cleanup
+      # 7. Cleanup
       File.delete(keystore_path) if File.exist?(keystore_path)
+      File.delete(key_properties_path) if File.exist?(key_properties_path)
     end
   end
 end
