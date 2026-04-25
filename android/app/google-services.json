@@ -1,0 +1,114 @@
+{
+  "project_info": {
+    "project_number": "521897010746",
+    "project_id": "chronoflow-1",
+    "storage_bucket": "chronoflow-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521897010746:android:b8ac3be66d31cc1d49f703",
+        "android_client_info": {
+          "package_name": "edu.nus.u.chronoflow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521897010746-e5qmp1bnjao16rv2u1cracvoi0kvsi77.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.nus.u.chronoflow",
+            "certificate_hash": "04d0b7d2dec30aa165dd9a149ca97a1c924c69e3"
+          }
+        },
+        {
+          "client_id": "521897010746-gc1iikika8m2k7dk9n8h5c46umhs51ll.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.nus.u.chronoflow",
+            "certificate_hash": "9fa80fece87b1d4646ee0c2868c0ed99f7c58e91"
+          }
+        },
+        {
+          "client_id": "521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfFvzzVJiIoJunMPan_DzguVtHqGiNess"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "521897010746-21a2ogrfr4ub71am6lvob795ip2v0tj8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "edu.nus.u.chronoflow"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521897010746:android:00e1b0a7acb4be7349f703",
+        "android_client_info": {
+          "package_name": "edu.nus.u.chronoflowapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521897010746-o8ed85aas4gjobo1chrbilmfltdc5ai1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.nus.u.chronoflowapp",
+            "certificate_hash": "04d0b7d2dec30aa165dd9a149ca97a1c924c69e3"
+          }
+        },
+        {
+          "client_id": "521897010746-vou4bdq0940lkpog5m166r96h46opopq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.nus.u.chronoflowapp",
+            "certificate_hash": "9fa80fece87b1d4646ee0c2868c0ed99f7c58e91"
+          }
+        },
+        {
+          "client_id": "521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfFvzzVJiIoJunMPan_DzguVtHqGiNess"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521897010746-eub5olv0ribkc50pbaicuqbjjkkakl81.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "521897010746-21a2ogrfr4ub71am6lvob795ip2v0tj8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "edu.nus.u.chronoflow"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
