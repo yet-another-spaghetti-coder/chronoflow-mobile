@@ -82,14 +82,6 @@ jobs:
         working-directory: ios
         run: |
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
-          # Complete silence, only show if it fails
-          if ! bundle exec fastlane beta > /tmp/fastlane.log 2>&1; then
-            echo "❌ Fastlane failed"
-            echo "Last 60 lines:"
-            tail -60 /tmp/fastlane.log
-          exit 1
-          fi
-            echo "✅ Deployment successful"
         env:
           APPLE_ID: ${{secrets.APPLE_ID}}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
@@ -99,20 +91,6 @@ jobs:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD:
-
-      - name: Upload fastlane log
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: fastlane-ios-log
-          path: /tmp/fastlane.log
-
-      - name: Upload fastlane match log
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: fastlane-match-log
-          path: /tmp/fastlane-match.log
 
       - name: Upload runner log
         if: failure()
@@ -128,10 +106,3 @@ jobs:
           rm -f ~/${{ secrets.APP_STORE_CONNECT_KEY_PATH }}
           rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
   
-      - name: Log deployment
-        if: always()
-        run: |
-          echo "Deployment attempt at $(date)"
-          echo "Commit: ${{ github.sha }}"
-          echo "Actor: ${{ github.actor }}"
-          echo "Status: ${{ job.status }}"
