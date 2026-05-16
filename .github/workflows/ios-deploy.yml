@@ -82,6 +82,7 @@ jobs:
         working-directory: ios
         run: |
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
+          bundle exec fastlane beta
         env:
           APPLE_ID: ${{secrets.APPLE_ID}}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
