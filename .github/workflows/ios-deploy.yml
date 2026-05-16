@@ -71,7 +71,7 @@ jobs:
       - name: Install Certificates
         working-directory: ios
         run: |
-          bundle exec fastlane run_match > /tmp/fastlane-match.log
+          bundle exec fastlane run_match
         env:
           APPLE_ID: ${{secrets.APPLE_ID}}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
